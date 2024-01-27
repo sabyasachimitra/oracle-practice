@@ -1,0 +1,156 @@
+
+TKPROF: Release 19.0.0.0.0 - Development on Sun Jul 31 21:28:43 2022
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Trace file: /u01/app/oracle/diag/rdbms/cdb01/cdb01/trace/cdb01_ora_8470.trc
+Sort options: exeela  prsela  fchela  
+********************************************************************************
+count    = number of times OCI procedure was executed
+cpu      = cpu time in seconds executing 
+elapsed  = elapsed time in seconds executing
+disk     = number of physical reads of buffers from disk
+query    = number of buffers gotten for consistent read
+current  = number of buffers gotten in current mode (usually for update)
+rows     = number of rows processed by the fetch or execute call
+********************************************************************************
+
+SELECT /* my query2 */ TO_CHAR(SUM(ORDER_TOTAL),'999,999,999') TOTAL FROM
+SOE.ORDERS WHERE TO_CHAR(ORDER_DATE,'MM-RRRR') =:month_year
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.19       0.75      16794      17631          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.19       0.76      16794      17631          0           1
+
+Misses in library cache during parse: 1
+Misses in library cache during execute: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 108  
+Number of plan statistics captured: 1
+
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+         1          1          1  SORT AGGREGATE (cr=17631 pr=16794 pw=0 time=756521 us starts=1)
+      8871       8871       8871   TABLE ACCESS FULL ORDERS (cr=17631 pr=16794 pw=0 time=47252 us starts=1 cost=4856 size=216336 card=13521)
+
+
+Elapsed times include waiting on following events:
+  Event waited on                             Times   Max. Wait  Total Waited
+  ----------------------------------------   Waited  ----------  ------------
+  SQL*Net message to client                       2        0.00          0.00
+  PGA memory operation                            2        0.00          0.00
+  Disk file operations I/O                        2        0.00          0.00
+  asynch descriptor resize                        1        0.00          0.00
+  db file scattered read                        194        0.00          0.39
+  db file sequential read                         2        0.00          0.00
+  SQL*Net message from client                     2        4.78          4.78
+********************************************************************************
+
+SQL ID: 1xsy79xnt2avk Plan Hash: 0
+
+BEGIN :month_year := '01-2010'; END;
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           1
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.00       0.00          0          0          0           1
+
+Misses in library cache during parse: 1
+Misses in library cache during execute: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 108  
+
+Elapsed times include waiting on following events:
+  Event waited on                             Times   Max. Wait  Total Waited
+  ----------------------------------------   Waited  ----------  ------------
+  SQL*Net message to client                       1        0.00          0.00
+  SQL*Net message from client                     1        1.37          1.37
+********************************************************************************
+
+SQL ID: 5zwkyu5kdsw6m Plan Hash: 0
+
+ALTER SESSION SET EVENTS='10046 trace name context off'
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.00       0.00          0          0          0           0
+
+Misses in library cache during parse: 0
+Parsing user id: 108  
+
+
+
+********************************************************************************
+
+OVERALL TOTALS FOR ALL NON-RECURSIVE STATEMENTS
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        3      0.00       0.00          0          0          0           0
+Execute      3      0.00       0.00          0          0          0           1
+Fetch        2      0.19       0.75      16794      17631          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        8      0.19       0.76      16794      17631          0           2
+
+Misses in library cache during parse: 2
+Misses in library cache during execute: 2
+
+Elapsed times include waiting on following events:
+  Event waited on                             Times   Max. Wait  Total Waited
+  ----------------------------------------   Waited  ----------  ------------
+  SQL*Net message to client                       4        0.00          0.00
+  SQL*Net message from client                     4        8.18         14.34
+  PGA memory operation                            2        0.00          0.00
+  Disk file operations I/O                        2        0.00          0.00
+  asynch descriptor resize                        1        0.00          0.00
+  db file scattered read                        194        0.00          0.39
+  db file sequential read                         2        0.00          0.00
+
+
+OVERALL TOTALS FOR ALL RECURSIVE STATEMENTS
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        9      0.00       0.00          0         24          0           0
+Execute    162      0.00       0.01          0          0          0           0
+Fetch      283      0.00       0.00          0        602          0         906
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total      454      0.00       0.02          0        626          0         906
+
+Misses in library cache during parse: 9
+Misses in library cache during execute: 13
+
+Elapsed times include waiting on following events:
+  Event waited on                             Times   Max. Wait  Total Waited
+  ----------------------------------------   Waited  ----------  ------------
+  PGA memory operation                            5        0.00          0.00
+
+    3  user  SQL statements in session.
+   29  internal SQL statements in session.
+   32  SQL statements in session.
+********************************************************************************
+Trace file: /u01/app/oracle/diag/rdbms/cdb01/cdb01/trace/cdb01_ora_8470.trc
+Trace file compatibility: 12.2.0.0
+Sort options: exeela  prsela  fchela  
+       1  session in tracefile.
+       3  user  SQL statements in trace file.
+      29  internal SQL statements in trace file.
+      32  SQL statements in trace file.
+      32  unique SQL statements in trace file.
+    2927  lines in trace file.
+       6  elapsed seconds in trace file.
+
+

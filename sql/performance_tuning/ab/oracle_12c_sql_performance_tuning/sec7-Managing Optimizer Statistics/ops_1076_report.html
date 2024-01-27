@@ -1,0 +1,969 @@
+tkyte@DB19C01> print :MY_REPORT
+<html>
+    <head>
+        <title>
+   Optimizer Statistics Operations Report
+ </title>
+        <style type="text/css">
+    body, table, input, select, textarea
+    {font:normal normal 8pt Verdana,Arial;text-decoration:none;color:#000000;}
+    .s8 {font-size:8pt;color:#006699}
+    .s9 {font-size:10pt;color:#006699}
+    .s10 {font-size:14pt;color:#006699;}
+    .s16 {border-width : 1px; border-color : #CCCC99;
+            border-style: solid;color:#006699;font-size:8pt;}
+    .s17 {border-width : 1px; border-color : #CCCC99;
+           border-style: solid;font-size:8pt;}
+    .s27 {border-width : 1px; border-color : #CCCC99; border-style: solid;}
+   </style>
+    </head>
+    <body>
+        <table class="ex" cellspacing="0" border="1" width="100%">
+            <tr BORDERCOLOR="#336699">
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation Id</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Target</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Start Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">End Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Status</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Total Tasks</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Successful Tasks<
+/th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Failed Tasks</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Active Tasks</th>
+
+            </tr>
+            <tr valign="top" class="s16">
+                <td>1076</td>
+                <td>gather_database_stats (auto)</td>
+                <td>AUTO</td>
+                <td>26-JUN-22 09.42.17.579592 PM +05:30</td>
+                <td>26-JUN-22 09.42.38.058928 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>126</td>
+                <td>124</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="ex" cellspacing="0" border="1" bgcolor="#FFE87C" width="10
+0%">
+            <tr valign="center" class="s16">
+                <td align="center">
+                    <hr/>
+                    <b>
+                        <font size="2"> T   A   S   K   S </font>
+                    </b>
+                    <hr/>
+                    <table class="ex" cellspacing="0" border="1" bgcolor="#FFFFF
+F" width="97%">
+                        <tr BORDERCOLOR="#336699">
+                            <th align="left" bgcolor="#CCCC99" class="s16">Targe
+t</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Type<
+/th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Start
+ Time</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">End T
+ime</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Statu
+s</th>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"TKYTE"."ORDERS_STATS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.24.739817 PM +05:30</td>
+                            <td>26-JUN-22 09.42.25.016562 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"TKYTE"."ORDERS_STATS"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.24.927494 PM +05:30</td>
+                            <td>26-JUN-22 09.42.24.969894 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SOE"."ORDERS_STATS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.25.018320 PM +05:30</td>
+                            <td>26-JUN-22 09.42.25.619484 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SOE"."ORDERS_STATS"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.25.472850 PM +05:30</td>
+                            <td>26-JUN-22 09.42.25.617095 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SH"."SALES_TRANSACTIONS_EXT"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.25.620209 PM +05:30</td>
+                            <td>26-JUN-22 09.42.25.933272 PM +05:30</td>
+                            <td>FAILED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"TKYTE"."ORDERS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.25.935099 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.848448 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"TKYTE"."ORDERS_TOTAL_IX"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.27.930657 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.845223 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_HEATMAP_TOP_TABLESPACES"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.30.849614 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.890836 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."DBMS_LOCK_ALLOCATED"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.30.892059 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.951785 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SYS_C004954"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.30.915323 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.925784 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SYS_C004955"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.30.927388 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.936883 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."DBMS_LOCK_EXPIRATION_IND"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.30.938514 PM +05:30</td>
+                            <td>26-JUN-22 09.42.30.949177 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."COL_GROUP_USAGE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.30.952911 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.048976 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."PK_COL_GROUP_USAGE$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.032260 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.045966 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RECYCLEBIN$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.050069 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.173806 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RECYCLEBIN$_OWNER"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.137637 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.153658 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RECYCLEBIN$_OBJ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.155082 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.163013 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RECYCLEBIN$_TS"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.163921 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.172234 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."OPTSTAT_HIST_CONTROL$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.174445 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.208227 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXP_OBJ$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.209408 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.264101 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_EXP_OBJ$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.248591 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.260912 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXP_STAT$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.265206 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.366875 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_EXP_STAT$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.347260 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.363951 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXPDEPOBJ$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.367956 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.467191 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_DEPENDOBJ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.438439 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.447801 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_PARENTOBJ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.449235 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.464819 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXTERNAL_TAB$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.468206 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.519275 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_EXTERNAL_TAB1$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.502549 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.516823 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXTERNAL_LOCATION$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.520311 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.564920 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_EXTERNAL_LOCATION1$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.545433 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.562607 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.565990 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.632100 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.611340 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.628630 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.633660 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.682716 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.669559 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.680409 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_MAP$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.683768 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.739908 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_MAP1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.718417 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.728082 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_MAP2"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.729688 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.737909 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_EE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.740861 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.788398 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_EE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.774914 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.786137 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_TE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.789310 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.834464 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_TE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.822649 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.832352 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_RE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.835510 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.922807 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I1_RULE_SET_RE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.879790 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.890613 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I2_RULE_SET_RE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.892126 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.905470 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I3_RULE_SET_RE"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.907079 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.920567 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_ROR$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.923771 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.973250 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_ROR"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.31.960439 PM +05:30</td>
+                            <td>26-JUN-22 09.42.31.970938 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_FOB$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.31.974266 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.029868 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_FOB"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.020136 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.028557 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_NL$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.030461 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.105299 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_NL"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.091293 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.103504 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_RDEP$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.106061 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.169110 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_RDEP1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.147147 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.156285 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_RDEP2"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.157576 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.167591 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."RULE_SET_IOT$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.169963 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.248315 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SYS_IOT_TOP_7967"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.214290 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.224195 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_RULE_SET_IOT"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.225328 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.246513 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYSTEM"."AQ$_QUEUES"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.249233 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.360506 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYSTEM"."AQ$_QUEUES_PRIMARY"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.328506 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.336110 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYSTEM"."AQ$_QUEUES_CHECK"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.337797 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.346756 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYSTEM"."I1_QUEUES"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.348957 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.358171 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."AQ$_SUBSCRIBER_TABLE"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.361797 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.437710 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."AQ$_SUBSCRIBER_TABLE_PRIMARY"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.418650 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.426974 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."AQ$_SUBSCRIBER_TABLE_I"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.427894 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.435364 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SCHEDULER$_JOB"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.438430 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.620982 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_JOB1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.563514 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.572414 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_JOB2"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.574107 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.584348 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_JOB3"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.585693 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.594309 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_JOB4"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.595296 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.606544 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SCHEDULER$_JOB_PK"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.607992 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.618246 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."KU_UTLUSE"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.622023 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.663541 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."KET$_AUTOTASK_STATUS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.664667 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.705199 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."KETSTATUS_UQ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.687600 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.701079 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."KET$_CLIENT_TASKS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.707167 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.835200 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."KET$_TSK_PK"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.822563 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.833399 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."AQ$_KUPC$DATAPUMP_QUETAB_1_S"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.835907 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.892896 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SYS_C007556"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.881713 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.890618 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."EXP_HEAD$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.893887 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.935601 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_EXP_HEAD$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.32.918674 PM +05:30</td>
+                            <td>26-JUN-22 09.42.32.933896 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."COL_USAGE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.32.936212 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.134191 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_COL_USAGE$"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.122706 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.132495 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."MON_MODS_ALL$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.33.135053 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.213821 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_MON_MODS_ALL$_OBJ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.200032 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.210757 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."STATS_TARGET$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.33.214937 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.307523 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_STATS_TARGET1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.284464 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.297266 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_STATS_TARGET2"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.298635 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.305612 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."VIEW$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.33.308418 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.346598 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_VIEW1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.334786 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.344215 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."HISTGRM$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.33.347672 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.667204 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_H_OBJ#_COL#"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.605122 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.664522 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_OPR_TASKS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.33.668373 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.012627 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_TASKS_TGST"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.952013 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.971118 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_TASKS_OPID"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.972068 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.979991 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_TASKS_STIME"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.981013 PM +05:30</td>
+                            <td>26-JUN-22 09.42.33.992159 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_TASKS_OPOBJ"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.33.993613 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.010302 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SCHEDULER$_WINDOW"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.34.013311 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.074331 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SCHEDULER$_WINDOW_PK"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.34.050745 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.057175 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_WINDOW1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.34.057979 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.071721 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SCHEDULER$_WINDOW_DETAILS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.34.075362 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.123916 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_SCHEDULER_WINDOW_DETAILS"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.34.112630 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.121477 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_OPR"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.34.124910 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.245870 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_STIME"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.34.223207 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.233209 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_OPR_ID"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.34.234776 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.243516 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SEG$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.34.246928 PM +05:30</td>
+                            <td>26-JUN-22 09.42.34.377749 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_HISTGRM_HISTORY"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.34.378895 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.841471 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_H_OBJ#_ICOL#_ST"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.35.391307 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.741722 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_WRI$_OPTSTAT_H_ST"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.35.743298 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.839863 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."OPQTYPE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.35.842049 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.966072 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_OPQTYPE1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.35.937634 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.963804 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."OPT_DIRECTIVE_OWN$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.35.967074 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.996214 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_OPT_DIRECTIVE_OWN#"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.35.985393 PM +05:30</td>
+                            <td>26-JUN-22 09.42.35.993854 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SMON_SCN_TIME"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.35.997180 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.111818 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SMON_SCN_TIME_TIM_IDX"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.086446 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.097662 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SMON_SCN_TIME_SCN_IDX"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.099119 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.109336 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."COLTYPE$"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.36.112904 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.378736 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_COLTYPE1"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.331878 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.356191 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_COLTYPE2"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.358761 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.374675 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."I_OBJ#_INTCOL#"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.392537 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.422121 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."SMON_SCN_TO_TIME_AUX_IDX"</td>
+                            <td>INDEX</td>
+                            <td>26-JUN-22 09.42.36.423813 PM +05:30</td>
+                            <td>26-JUN-22 09.42.36.426986 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_HISTHEAD_HISTORY"."SYS_P847"
+</td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.36.430222 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.325662 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_HISTHEAD_HISTORY"."SYS_P847"
+</td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.36.474255 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.325662 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"AUDSYS"."AUD$UNIFIED"."SYS_P653"</td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.37.326982 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.504416 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"AUDSYS"."AUD$UNIFIED"."SYS_P653"</td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.37.369719 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.504416 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_HISTGRM_HISTORY"."SYS_P850"<
+/td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.37.505404 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.939894 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."WRI$_OPTSTAT_HISTGRM_HISTORY"."SYS_P850"<
+/td>
+                            <td>TABLE PARTITION</td>
+                            <td>26-JUN-22 09.42.37.516587 PM +05:30</td>
+                            <td>26-JUN-22 09.42.37.939894 PM +05:30</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                        <tr valign="top" class="s16">
+                            <td>"SYS"."X$LOGMNR_CONTENTS"</td>
+                            <td>TABLE</td>
+                            <td>26-JUN-22 09.42.37.944122 PM +05:30</td>
+                            <td>26-JUN-22 09.42.38.034621 PM +05:30</td>
+                            <td>FAILED</td>
+                        </tr>
+                    </table>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+
+tkyte@DB19C01> spool off

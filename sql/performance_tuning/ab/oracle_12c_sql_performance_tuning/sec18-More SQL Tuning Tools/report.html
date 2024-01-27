@@ -1,0 +1,275 @@
+sys@DB19C01> select DBMS_SQLPA.REPORT_ANALYSIS_TASK(TASK_NAME => 'TASK_196', TYPE=>'HTML', SECTION=>'ALL') from dual;
+
+<html>
+    <head>
+        <title>
+   SQL Performance Impact Analyzer Report
+   </title>
+        <style type="text/css">
+    body, table, input, select, textarea
+    {font:normal normal 8pt Verdana,Arial;text-decoration:none;color:#000000;}
+    .s8 {font-size:8pt;color:#006699}
+    .s9 {font-size:10pt;color:#006699}
+    .s10 {font-size:14pt;color:#006699;}
+    .s16 {border-width : 1px; border-color : #CCCC99;
+            border-style: solid;color:#006699;font-size:8pt;}
+    .s17 {border-width : 1px; border-color : #CCCC99;
+           border-style: solid;font-size:8pt;}
+    .s27 {border-width : 1px; border-color : #CCCC99; border-style: solid;}
+
+    </style>
+    </head>
+    <body>
+        <a name="general"/>
+        <a href="#general" style="text-decoration:none">
+            <font class="s10"> General Information </font>
+        </a>
+        <hr size="3" width="650" align="left"/>
+        <br/>
+        <table class="ex" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <font class="s9">
+                        <b>Task Information:</b>
+                    </font>
+                    <hr size="1" width="312" align="left"/>
+                </td>
+                <td>
+                    <font class="s9">
+                        <b>Workload Information:</b>
+                    </font>
+                    <hr size="1" width="315" align="left"/>
+                </td>
+            </tr>
+            <tr align="left" valign="top">
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">Task Name</th>
+                            <td>: TASK_196</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Task Owner</th>
+                            <td>: SYS</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Description</th>
+                            <td>: </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">SQL Tuning Set Name</th>
+                            <td>: SOE_WKLD_STS</td>
+                        </tr>
+                        <tr>
+                            <th align="left">SQL Tuning Set Owner</th>
+                            <td>: SOE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Total SQL Statement Count</th>
+                            <td>: 22</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <font class="s9">
+            <b>Execution Information:</b>
+        </font>
+        <hr size="1" width="650" align="left"/>
+        <table class="ex" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">Execution Name</th>
+                            <td>:
+         EXEC_926</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Execution Type</th>
+                            <td>:
+         COMPARE PERFORMANCE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Description</th>
+                            <td>:
+         </td>
+                        </tr>
+                        <tr>
+                            <th align="left">Scope</th>
+                            <td>:
+         COMPREHENSIVE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Status</th>
+                            <td>:
+         COMPLETED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Number of Unsupported SQL</th>
+                            <td>:
+            12</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">Started </th>
+                            <td>:
+         03/11/2023 02:22:29</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Last Updated </th>
+                            <td>:
+          03/11/2023 02:22:29</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Global Time Limit</th>
+                            <td>:
+          UNLIMITED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Per-SQL Time Limit</th>
+                            <td>:
+           UNUSED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Number of Errors</th>
+                            <td>:
+          0</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <font class="s9">
+            <b> Analysis Information: </b>
+            <hr size="1" width="650" align="left"/>
+        </font>
+        <table border="0">
+            <tr>
+                <td>
+                    <font class="s8">
+                        <b>Before Change Execution:</b>
+                    </font>
+                    <hr size="1" width="312" align="left"/>
+                </td>
+                <td>
+                    <font class="s8">
+                        <b>After Change Execution:</b>
+                    </font>
+                    <hr size="1" width="315" align="left"/>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">Execution Name</th>
+                            <td>: before</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Execution Type</th>
+                            <td>:
+         TEST EXECUTE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Scope</th>
+                            <td>: COMPREHENSIVE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Status</th>
+                            <td>: COMPLETED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Started </th>
+                            <td>: 03/11/2023 01:56:47</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Last Updated </th>
+                            <td>: 03/11/2023 01:56:47</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Global Time Limit</th>
+                            <td>: UNLIMITED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Per-SQL Time Limit</th>
+                            <td>: UNUSED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Number of Errors</th>
+                            <td>: 0</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="ex" cellspacing="0" border="0">
+                        <tr>
+                            <th align="left">Execution Name</th>
+                            <td>: after</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Execution Type</th>
+                            <td>:
+         TEST EXECUTE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Scope</th>
+                            <td>: COMPREHENSIVE</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Status</th>
+                            <td>: COMPLETED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Started </th>
+                            <td>: 03/11/2023 02:21:27</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Last Updated </th>
+                            <td>: 03/11/2023 02:21:29</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Global Time Limit</th>
+                            <td>: UNLIMITED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Per-SQL Time Limit</th>
+                            <td>: UNUSED</td>
+                        </tr>
+                        <tr>
+                            <th align="left">Number of Errors</th>
+                            <td>: 0</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <hr size="1" width="312" align="left"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <font class="s8">
+                        <b>Comparison Metric:</b>
+                    </font>
+                    <b>ELAPSED_TIME</b>
+                    <hr size="1" width="125" align="left"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <font class="s8">
+
+
+
+sys@DB19C01> SPOOL OFF

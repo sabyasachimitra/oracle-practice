@@ -1,0 +1,1546 @@
+sys@CDB01> PRINT :v_report
+
+V_REPORT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+GENERAL INFORMATION SECTION
+-------------------------------------------------------------------------------
+Tuning Task Name                        : SYS_AUTO_SQL_TUNING_TASK
+Tuning Task Owner                       : SYS
+Workload Type                           : Automatic High-Load SQL Workload
+Execution Count                         : 13
+Current Execution                       : EXEC_1032
+Execution Type                          : TUNE SQL
+Scope                                   : COMPREHENSIVE
+Global Time Limit(seconds)              : 3600
+Per-SQL Time Limit(seconds)             : 1200
+Completion Status                       : COMPLETED
+Started at                              : 07/29/2022 00:30:05
+Completed at                            : 07/29/2022 00:30:30
+Number of Candidate SQLs                : 6
+Cumulative Elapsed Time of SQL (s)      : 6
+
+-------------------------------------------------------------------------------
+SUMMARY SECTION
+-------------------------------------------------------------------------------
+                      Global SQL Tuning Result Statistics
+-------------------------------------------------------------------------------
+Number of SQLs Analyzed                      : 6
+Number of SQLs in the Report                 : 1
+Number of SQLs with Findings                 : 1
+Number of SQLs with SQL profiles recommended : 1
+
+-------------------------------------------------------------------------------
+    SQLs with Findings Ordered by Maximum (Profile/Index) Benefit, Object ID
+-------------------------------------------------------------------------------
+object ID  SQL ID        statistics profile(benefit) index(benefit) restructure
+---------- ------------- ---------- ---------------- -------------- -----------
+       504 afqkzrct8pksf                    <=10.00%
+
+-------------------------------------------------------------------------------
+DETAILS SECTION
+-------------------------------------------------------------------------------
+ Statements with Results Ordered by Maximum (Profile/Index) Benefit, Object ID
+-------------------------------------------------------------------------------
+Object ID     : 504
+Schema Name   : TKYTE
+Container Name: DB19C01
+SQL ID        : afqkzrct8pksf
+SQL Text      : with locks as(
+                                                select session_id,lock_type,
+
+                mode_held,mode_requested,lock_id1,lock_id2,blocking_others
+                                                  from sys.dba_lock),
+                                            waiters as (
+                                                select w.session_id
+                waiting_session,
+                                                        h.session_id
+                holding_session,
+                                                        w.lock_type
+                lock_type,
+                                                        h.mode_held
+                mode_held,
+                                                        w.mode_requested
+                mode_requested,
+                                                        w.lock_id1,
+                                                        w.lock_id2
+                                                  from locks w, locks h
+                                                 where h.blocking_others =
+                'Blocking'
+                                                  and  h.mode_held      !=
+                'None'
+                                                  and  h.mode_held      !=
+                'Null'
+                                                  and  w.mode_requested !=
+                'None'
+                                                  and  w.lock_type       =
+                h.lock_type
+                                                  and  w.lock_id1        =
+                h.lock_id1
+                                                  and  w.lock_id2        =
+                h.lock_id2
+                                                  and  (w.session_id = :SID
+                                                        or
+                                                        h.session_id =
+                :SID)),
+                                            blockers as(
+                                                select holding_session
+                waiting_session, to_number(null) holding_session,
+                                                       'None' lock_type, null
+                mode_held, null mode_requested,
+                                                       null lock_id1, null
+                lock_id2
+                                                  from waiters
+                                                 minus
+                                                select waiting_session
+                waiting_session, to_number(null) holding_session,
+                                                       'None' lock_type, null
+                mode_held, null mode_requested,
+                                                       null lock_id1, null
+                lock_id2
+                                                  from waiters),
+                                            waiters_blockers as(
+                                                select
+                waiting_session,holding_session,lock_type,mode_held,mode_reque
+                sted,lock_id1,lock_id2
+                                                  from waiters
+                                                 union all
+                                                select
+                waiting_session,holding_session,lock_type,mode_held,mode_reque
+                sted,lock_id1,lock_id2
+                                                  from blockers),
+                                            lock_objects as(
+                                                select session_id,cnt
+                lock_obj_count,
+                                                       case when cnt = 1 then
+                object_name
+                                                            else null end
+                object_name,
+
+                object_id,owner,object_type
+                                                  from(
+                                                    select
+                session_id,count(distinct object_name) cnt,max(object_name)
+                object_name,
+                                                           max(lo.object_id)
+                object_id, max(ao.owner) owner,max(object_type) object_type
+                                                      from gv$locked_object
+                lo,all_objects ao,waiters_blockers wb
+                                                     where lo.object_id =
+                ao.object_id and lo.inst_id = :INST_ID
+                                                       and
+                (wb.waiting_session = lo.session_id
+                                                            or
+
+                wb.holding_session = lo.session_id)
+                                                     group by session_id)),
+                                            wait_block_ses as(
+                                            select
+                waiting_session,holding_session,lock_type,mode_held,mode_reque
+                sted,
+
+                s.username,s.osuser,s.CLIENT_INFO,s.CLIENT_IDENTIFIER,o.object
+                _name,o.owner,o.object_id,module,o.object_type,o.lock_obj_coun
+                t,
+                                                    (select command_name from
+                v$sqlcommand where command_type = s.command ) "Command"
+                                              from waiters_blockers wb,
+                gv$session s,
+                                                   lock_objects o
+                                             where s.sid = wb.waiting_session
+                and s.inst_id = :INST_ID
+                                               and o.session_id(+) =
+                wb.waiting_session
+                                              )
+                                            select  case when holding_session
+                is null then 'Lock'
+                                                         else 'Lock Waiting'
+                                                   end status,
+                                                   waiting_session,
+                                                   username,
+                                                    object_name,
+
+                object_id,owner,object_type
+                                              from wait_block_ses
+                                             start with holding_session is
+                null
+                                             connect by prior waiting_session
+                =  holding_session
+
+-------------------------------------------------------------------------------
+FINDINGS SECTION (1 finding)
+-------------------------------------------------------------------------------
+
+1- SQL Profile Finding (see explain plans section below)
+--------------------------------------------------------
+  A potentially better execution plan was found for this statement.
+  The SQL profile was not automatically created because its benefit could not
+  be verified.
+
+  Recommendation (estimated benefit<=10%)
+  ---------------------------------------
+  - Consider accepting the recommended SQL profile.
+    execute dbms_sqltune.accept_sql_profile(task_name =>
+            'SYS_AUTO_SQL_TUNING_TASK', object_id => 504, replace => TRUE);
+
+-------------------------------------------------------------------------------
+EXPLAIN PLANS SECTION
+-------------------------------------------------------------------------------
+
+1- Original With Adjusted Cost
+------------------------------
+
+-------------------------------------------------------------------------------
+Error: cannot fetch explain plan for object: 504
+-------------------------------------------------------------------------------
+
+2- Original With Adjusted Cost
+------------------------------
+Plan hash value: 3493940447
+
+------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                        | Name                      | Rows  | Bytes | Cost (%CPU)| Time     |
+------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                                 |                           |     2 |   500 |    35  (18)| 00:00:01 |
+|   1 |  TEMP TABLE TRANSFORMATION                       |                           |       |       |            |          |
+|   2 |   LOAD AS SELECT (CURSOR DURATION MEMORY)        | SYS_TEMP_0FD9D6633_B40D2E |       |       |            |          |
+|*  3 |    HASH JOIN                                     |                           |  1069 |   109K|     1 (100)| 00:00:01 |
+|*  4 |     HASH JOIN                                    |                           |    47 |  3760 |     1 (100)| 00:00:01 |
+|*  5 |      FIXED TABLE FULL                            | X$KSUSE                   |   454 |  7264 |     0   (0)| 00:00:01 |
+|   6 |      VIEW                                        | GV$_LOCK                  |    47 |  3008 |     1 (100)| 00:00:01 |
+|   7 |       UNION-ALL                                  |                           |       |       |            |          |
+|*  8 |        FILTER                                    |                           |       |       |            |          |
+|   9 |         VIEW                                     | GV$_LOCK1                 |    39 |  3003 |     1 (100)| 00:00:01 |
+|  10 |          UNION-ALL                               |                           |       |       |            |          |
+|* 11 |           FIXED TABLE FULL                       | X$KDNSSF                  |     1 |    25 |     0   (0)| 00:00:01 |
+|* 12 |           FIXED TABLE FULL                       | X$KSQEQ                   |    38 |  1026 |     1 (100)| 00:00:01 |
+|* 13 |        FIXED TABLE FULL                          | X$KTADM                   |     1 |    22 |     0   (0)| 00:00:01 |
+|* 14 |        FIXED TABLE FULL                          | X$KTATRFIL                |     1 |    22 |     0   (0)| 00:00:01 |
+|* 15 |        FIXED TABLE FULL                          | X$KTATRFSL                |     1 |    22 |     0   (0)| 00:00:01 |
+|* 16 |        FIXED TABLE FULL                          | X$KTATL                   |     1 |    35 |     0   (0)| 00:00:01 |
+|* 17 |        FIXED TABLE FULL                          | X$KTSTUSC                 |     1 |    30 |     0   (0)| 00:00:01 |
+|* 18 |        FIXED TABLE FULL                          | X$KTSTUSS                 |     1 |    29 |     0   (0)| 00:00:01 |
+|* 19 |        FIXED TABLE FULL                          | X$KTSTUSG                 |     1 |    22 |     0   (0)| 00:00:01 |
+|* 20 |        FIXED TABLE FULL                          | X$KTCXB                   |     1 |    33 |     0   (0)| 00:00:01 |
+|* 21 |     FIXED TABLE FULL                             | X$KSQRS                   |  2274 | 56850 |     0   (0)| 00:00:01 |
+|  22 |   LOAD AS SELECT (CURSOR DURATION MEMORY)        | SYS_TEMP_0FD9D6634_B40D2E |       |       |            |          |
+|* 23 |    HASH JOIN                                     |                           |     1 |   210 |    12   (0)| 00:00:01 |
+|* 24 |     VIEW                                         |                           |  1069 |    98K|     6   (0)| 00:00:01 |
+|  25 |      TABLE ACCESS FULL                           | SYS_TEMP_0FD9D6633_B40D2E |  1069 |   109K|     6   (0)| 00:00:01 |
+|* 26 |     VIEW                                         |                           |  1069 |   121K|     6   (0)| 00:00:01 |
+|  27 |      TABLE ACCESS FULL                           | SYS_TEMP_0FD9D6633_B40D2E |  1069 |   109K|     6   (0)| 00:00:01 |
+|  28 |   LOAD AS SELECT (CURSOR DURATION MEMORY)        | SYS_TEMP_0FD9D6635_B40D2E |       |       |            |          |
+|  29 |    UNION-ALL                                     |                           |       |       |            |          |
+|  30 |     VIEW                                         |                           |     1 |   129 |     2   (0)| 00:00:01 |
+|  31 |      TABLE ACCESS FULL                           | SYS_TEMP_0FD9D6634_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|  32 |     VIEW                                         |                           |     1 |    29 |     6  (34)| 00:00:01 |
+|  33 |      MINUS                                       |                           |       |       |            |          |
+|  34 |       SORT UNIQUE                                |                           |     1 |    13 |            |          |
+|  35 |        VIEW                                      |                           |     1 |    13 |     2   (0)| 00:00:01 |
+|  36 |         TABLE ACCESS FULL                        | SYS_TEMP_0FD9D6634_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|  37 |       SORT UNIQUE                                |                           |     1 |    13 |            |          |
+|  38 |        VIEW                                      |                           |     1 |    13 |     2   (0)| 00:00:01 |
+|  39 |         TABLE ACCESS FULL                        | SYS_TEMP_0FD9D6634_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|  40 |   LOAD AS SELECT (CURSOR DURATION MEMORY)        | SYS_TEMP_0FD9D6636_B40D2E |       |       |            |          |
+|  41 |    TABLE ACCESS BY INDEX ROWID                   | SUM$                      |     1 |     8 |     1   (0)| 00:00:01 |
+|* 42 |     INDEX UNIQUE SCAN                            | I_SUM$_1                  |     1 |       |     0   (0)| 00:00:01 |
+|* 43 |    FIXED TABLE FIXED INDEX                       | X$OCT (ind:2)             |     1 |    26 |     0   (0)| 00:00:01 |
+|  44 |    NESTED LOOPS                                  |                           |     2 |   750 |    10  (10)| 00:00:01 |
+|  45 |     NESTED LOOPS                                 |                           |     2 |   742 |    10  (10)| 00:00:01 |
+|  46 |      NESTED LOOPS                                |                           |     2 |   726 |    10  (10)| 00:00:01 |
+|* 47 |       HASH JOIN OUTER                            |                           |     2 |   538 |    10  (10)| 00:00:01 |
+|  48 |        VIEW                                      |                           |     2 |   170 |     2   (0)| 00:00:01 |
+|  49 |         TABLE ACCESS FULL                        | SYS_TEMP_0FD9D6635_B40D2E |     2 |   158 |     2   (0)| 00:00:01 |
+|  50 |        VIEW                                      |                           |     1 |   184 |     8  (13)| 00:00:01 |
+|  51 |         SORT GROUP BY                            |                           |     1 |   221 |     8  (13)| 00:00:01 |
+|* 52 |          FILTER                                  |                           |       |       |            |          |
+|  53 |           NESTED LOOPS                           |                           |     1 |   221 |     6   (0)| 00:00:01 |
+|  54 |            NESTED LOOPS                          |                           |     1 |   195 |     4   (0)| 00:00:01 |
+|  55 |             NESTED LOOPS                         |                           |     1 |   178 |     3   (0)| 00:00:01 |
+|* 56 |              HASH JOIN                           |                           |     1 |   153 |     2   (0)| 00:00:01 |
+|  57 |               NESTED LOOPS                       |                           |     1 |   140 |     2   (0)| 00:00:01 |
+|  58 |                NESTED LOOPS                      |                           |     1 |   140 |     2   (0)| 00:00:01 |
+|* 59 |                 HASH JOIN                        |                           |     1 |    29 |     0   (0)| 00:00:01 |
+|* 60 |                  FIXED TABLE FULL                | X$KTCXB                   |     2 |    48 |     0   (0)| 00:00:01 |
+|  61 |                  FIXED TABLE FULL                | X$KTADM                   |  2051 | 10255 |     0   (0)| 00:00:01 |
+|* 62 |                 INDEX RANGE SCAN                 | I_OBJ1                    |     1 |       |     1   (0)| 00:00:01 |
+|* 63 |                TABLE ACCESS BY INDEX ROWID       | OBJ$                      |     1 |   111 |     2   (0)| 00:00:01 |
+|  64 |               FIXED TABLE FULL                   | X$KSUSE                   |   454 |  5902 |     0   (0)| 00:00:01 |
+|* 65 |              INDEX RANGE SCAN                    | I_USER2                   |     1 |    25 |     1   (0)| 00:00:01 |
+|  66 |             TABLE ACCESS CLUSTER                 | USER$                     |     1 |    17 |     1   (0)| 00:00:01 |
+|* 67 |              INDEX UNIQUE SCAN                   | I_USER#                   |     1 |       |     0   (0)| 00:00:01 |
+|* 68 |            VIEW                                  |                           |     1 |    26 |     2   (0)| 00:00:01 |
+|  69 |             TABLE ACCESS FULL                    | SYS_TEMP_0FD9D6635_B40D2E |     2 |   158 |     2   (0)| 00:00:01 |
+|* 70 |           TABLE ACCESS BY INDEX ROWID            | IND$                      |     1 |     8 |     2   (0)| 00:00:01 |
+|* 71 |            INDEX UNIQUE SCAN                     | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|  72 |           NESTED LOOPS                           |                           |     1 |    32 |     4   (0)| 00:00:01 |
+|  73 |            NESTED LOOPS                          |                           |     1 |    23 |     3   (0)| 00:00:01 |
+|  74 |             TABLE ACCESS BY INDEX ROWID          | IND$                      |     1 |    10 |     2   (0)| 00:00:01 |
+|* 75 |              INDEX UNIQUE SCAN                   | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|* 76 |             TABLE ACCESS CLUSTER                 | TAB$                      |     1 |    13 |     1   (0)| 00:00:01 |
+|* 77 |            INDEX RANGE SCAN                      | I_OBJ1                    |     1 |     9 |     1   (0)| 00:00:01 |
+|* 78 |           TABLE ACCESS CLUSTER                   | TAB$                      |     1 |    13 |     2   (0)| 00:00:01 |
+|* 79 |            INDEX UNIQUE SCAN                     | I_OBJ#                    |     1 |       |     1   (0)| 00:00:01 |
+|* 80 |           TABLE ACCESS BY INDEX ROWID            | SEQ$                      |     1 |     8 |     1   (0)| 00:00:01 |
+|* 81 |            INDEX UNIQUE SCAN                     | I_SEQ1                    |     1 |       |     0   (0)| 00:00:01 |
+|  82 |           NESTED LOOPS                           |                           |    14 |   252 |     2   (0)| 00:00:01 |
+|* 83 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|* 84 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|  85 |           NESTED LOOPS                           |                           |    11 |   198 |     2   (0)| 00:00:01 |
+|* 86 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|* 87 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|  88 |           NESTED LOOPS                           |                           |     1 |    28 |     2   (0)| 00:00:01 |
+|  89 |            NESTED LOOPS                          |                           |     1 |    22 |     2   (0)| 00:00:01 |
+|  90 |             TABLE ACCESS BY INDEX ROWID          | TABPART$                  |     1 |    10 |     1   (0)| 00:00:01 |
+|* 91 |              INDEX UNIQUE SCAN                   | I_TABPART_OBJ$            |     1 |       |     0   (0)| 00:00:01 |
+|* 92 |             INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|* 93 |            FIXED TABLE FULL                      | X$KZSRO                   |     1 |     6 |     0   (0)| 00:00:01 |
+|  94 |           NESTED LOOPS                           |                           |    13 |   364 |     2   (0)| 00:00:01 |
+|  95 |            NESTED LOOPS                          |                           |     1 |    22 |     2   (0)| 00:00:01 |
+|  96 |             TABLE ACCESS BY INDEX ROWID          | TABCOMPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|* 97 |              INDEX UNIQUE SCAN                   | I_TABCOMPART$             |     1 |       |     0   (0)| 00:00:01 |
+|* 98 |             INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|* 99 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 100 |           NESTED LOOPS                           |                           |    13 |   494 |     3   (0)| 00:00:01 |
+| 101 |            NESTED LOOPS                          |                           |     1 |    32 |     3   (0)| 00:00:01 |
+| 102 |             NESTED LOOPS                         |                           |     1 |    20 |     2   (0)| 00:00:01 |
+| 103 |              TABLE ACCESS BY INDEX ROWID         | TABSUBPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|*104 |               INDEX UNIQUE SCAN                  | I_TABSUBPART$_OBJ$        |     1 |       |     0   (0)| 00:00:01 |
+| 105 |              TABLE ACCESS BY INDEX ROWID         | TABCOMPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|*106 |               INDEX UNIQUE SCAN                  | I_TABCOMPART$             |     1 |       |     0   (0)| 00:00:01 |
+|*107 |             INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*108 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 109 |           NESTED LOOPS                           |                           |     6 |   192 |     2   (0)| 00:00:01 |
+| 110 |            NESTED LOOPS                          |                           |     1 |    26 |     2   (0)| 00:00:01 |
+|*111 |             TABLE ACCESS BY INDEX ROWID          | TRIGGER$                  |     1 |    14 |     1   (0)| 00:00:01 |
+|*112 |              INDEX UNIQUE SCAN                   | I_TRIGGER2                |     1 |       |     0   (0)| 00:00:01 |
+|*113 |             INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*114 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 115 |           NESTED LOOPS                           |                           |     1 |    82 |     8   (0)| 00:00:01 |
+| 116 |            NESTED LOOPS                          |                           |     5 |    82 |     8   (0)| 00:00:01 |
+| 117 |             NESTED LOOPS                         |                           |     1 |    72 |     5   (0)| 00:00:01 |
+| 118 |              NESTED LOOPS                        |                           |     1 |    60 |     4   (0)| 00:00:01 |
+| 119 |               MERGE JOIN CARTESIAN               |                           |     1 |    56 |     3   (0)| 00:00:01 |
+|*120 |                INDEX RANGE SCAN                  | I_OBJ5                    |     1 |    50 |     3   (0)| 00:00:01 |
+| 121 |                BUFFER SORT                       |                           |    26 |   156 |     0   (0)| 00:00:01 |
+|*122 |                 FIXED TABLE FULL                 | X$KZSRO                   |    26 |   156 |     0   (0)| 00:00:01 |
+|*123 |               INDEX RANGE SCAN                   | I_USER2                   |     1 |     4 |     1   (0)| 00:00:01 |
+|*124 |              INDEX RANGE SCAN                    | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*125 |             INDEX RANGE SCAN                     | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*126 |            TABLE ACCESS BY INDEX ROWID           | DEPENDENCY$               |     1 |    10 |     3   (0)| 00:00:01 |
+| 127 |           NESTED LOOPS                           |                           |     1 |    25 |     3   (0)| 00:00:01 |
+| 128 |            NESTED LOOPS                          |                           |     1 |    19 |     3   (0)| 00:00:01 |
+| 129 |             TABLE ACCESS BY INDEX ROWID          | IND$                      |     1 |    10 |     2   (0)| 00:00:01 |
+|*130 |              INDEX UNIQUE SCAN                   | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|*131 |             INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |     9 |     1   (0)| 00:00:01 |
+|*132 |            FIXED TABLE FULL                      | X$KZSRO                   |     1 |     6 |     0   (0)| 00:00:01 |
+| 133 |           NESTED LOOPS                           |                           |    11 |   198 |     2   (0)| 00:00:01 |
+|*134 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|*135 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 136 |           NESTED LOOPS                           |                           |     1 |    82 |     8   (0)| 00:00:01 |
+| 137 |            NESTED LOOPS                          |                           |     5 |    82 |     8   (0)| 00:00:01 |
+| 138 |             NESTED LOOPS                         |                           |     1 |    72 |     5   (0)| 00:00:01 |
+| 139 |              NESTED LOOPS                        |                           |     1 |    60 |     4   (0)| 00:00:01 |
+| 140 |               MERGE JOIN CARTESIAN               |                           |     1 |    56 |     3   (0)| 00:00:01 |
+|*141 |                INDEX RANGE SCAN                  | I_OBJ5                    |     1 |    50 |     3   (0)| 00:00:01 |
+| 142 |                BUFFER SORT                       |                           |    26 |   156 |     0   (0)| 00:00:01 |
+|*143 |                 FIXED TABLE FULL                 | X$KZSRO                   |    26 |   156 |     0   (0)| 00:00:01 |
+|*144 |               INDEX RANGE SCAN                   | I_USER2                   |     1 |     4 |     1   (0)| 00:00:01 |
+|*145 |              INDEX RANGE SCAN                    | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*146 |             INDEX RANGE SCAN                     | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*147 |            TABLE ACCESS BY INDEX ROWID           | DEPENDENCY$               |     1 |    10 |     3   (0)| 00:00:01 |
+| 148 |           VIEW                                   |                           |     1 |    13 |     2   (0)| 00:00:01 |
+| 149 |            FAST DUAL                             |                           |     1 |       |     2   (0)| 00:00:01 |
+| 150 |           NESTED LOOPS                           |                           |    14 |   210 |     2   (0)| 00:00:01 |
+|*151 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |     9 |     2   (0)| 00:00:01 |
+|*152 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 153 |           VIEW                                   |                           |     1 |    16 |    10   (0)| 00:00:01 |
+| 154 |            SORT GROUP BY                         |                           |     1 |    35 |    10   (0)| 00:00:01 |
+| 155 |             NESTED LOOPS                         |                           |     1 |    35 |     8   (0)| 00:00:01 |
+| 156 |              NESTED LOOPS                        |                           |     5 |   115 |     3   (0)| 00:00:01 |
+|*157 |               INDEX UNIQUE SCAN                  | I_OLAP_CUBES$             |     1 |    13 |     0   (0)| 00:00:01 |
+| 158 |               TABLE ACCESS BY INDEX ROWID BATCHED| DEPENDENCY$               |     5 |    50 |     3   (0)| 00:00:01 |
+|*159 |                INDEX RANGE SCAN                  | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*160 |              INDEX RANGE SCAN                    | I_OBJ1                    |     1 |    12 |     1   (0)| 00:00:01 |
+| 161 |           NESTED LOOPS                           |                           |    14 |   210 |     2   (0)| 00:00:01 |
+|*162 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |     9 |     2   (0)| 00:00:01 |
+|*163 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 164 |           NESTED LOOPS                           |                           |     1 |    18 |     2   (0)| 00:00:01 |
+|*165 |            INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|*166 |            FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|*167 |           TABLE ACCESS BY INDEX ROWID BATCHED    | USER_EDITIONING$          |     1 |     6 |     2   (0)| 00:00:01 |
+|*168 |            INDEX RANGE SCAN                      | I_USER_EDITIONING         |     2 |       |     1   (0)| 00:00:01 |
+|*169 |           TABLE ACCESS BY INDEX ROWID BATCHED    | USER_EDITIONING$          |     1 |     6 |     2   (0)| 00:00:01 |
+|*170 |            INDEX RANGE SCAN                      | I_USER_EDITIONING         |     2 |       |     1   (0)| 00:00:01 |
+| 171 |           NESTED LOOPS                           |                           |     1 |    29 |     2   (0)| 00:00:01 |
+|*172 |            INDEX SKIP SCAN                       | I_USER2                   |     1 |    20 |     1   (0)| 00:00:01 |
+|*173 |            INDEX RANGE SCAN                      | I_OBJ4                    |     1 |     9 |     1   (0)| 00:00:01 |
+|*174 |       FIXED TABLE FIXED INDEX                    | X$KSUSE (ind:1)           |     1 |    94 |     0   (0)| 00:00:01 |
+|*175 |      FIXED TABLE FIXED INDEX                     | X$KSLWT (ind:1)           |     1 |     8 |     0   (0)| 00:00:01 |
+|*176 |     FIXED TABLE FIXED INDEX                      | X$KSLED (ind:2)           |     1 |     4 |     0   (0)| 00:00:01 |
+|*177 |   CONNECT BY NO FILTERING WITH START-WITH        |                           |       |       |            |          |
+| 178 |    VIEW                                          |                           |     1 |   250 |     2   (0)| 00:00:01 |
+| 179 |     TABLE ACCESS FULL                            | SYS_TEMP_0FD9D6636_B40D2E |     1 |   365 |     2   (0)| 00:00:01 |
+------------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - access(TO_CHAR(USERENV('INSTANCE'))||RAWTOHEX("RADDR")=TO_CHAR("R"."INST_ID")||RAWTOHEX("R"."ADDR"))
+   4 - access("SADDR"="S"."ADDR")
+   5 - filter("S"."INST_ID"=USERENV('INSTANCE'))
+   8 - filter(USERENV('INSTANCE') IS NOT NULL)
+  11 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  12 - filter(BITAND("KSSPAFLG",1)<>0 AND ("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  13 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  14 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  15 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  16 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  17 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  18 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  19 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  20 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSPAFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  21 - filter("R"."CON_ID"=0 OR "R"."CON_ID"=3)
+  23 - access("W"."LOCK_TYPE"="H"."LOCK_TYPE" AND "W"."LOCK_ID1"="H"."LOCK_ID1" AND "W"."LOCK_ID2"="H"."LOCK_ID2")
+       filter("W"."SESSION_ID"=:SID OR "H"."SESSION_ID"=:SID)
+  24 - filter("W"."MODE_REQUESTED"<>'None')
+  26 - filter("H"."BLOCKING_OTHERS"='Blocking' AND "H"."MODE_HELD"<>'None' AND "H"."MODE_HELD"<>'Null')
+  42 - access("S"."OBJ#"=:B1)
+  43 - filter("INDX"=:B1 AND "OCT_TYPE"=:B2 AND ("CON_ID"=0 OR "CON_ID"=3) AND "INST_ID"=USERENV('INSTANCE'))
+  47 - access("O"."SESSION_ID"(+)="WB"."WAITING_SESSION")
+  52 - filter(("O"."TYPE#"<>1 AND "O"."TYPE#"<>10 OR "O"."TYPE#"=1 AND  (SELECT /*+ INDEX_RS_ASC ("I" "I_IND1") */ 1
+              FROM "SYS"."IND$" "I" WHERE "I"."OBJ#"=:B1 AND ("I"."TYPE#"=1 OR "I"."TYPE#"=2 OR "I"."TYPE#"=3 OR "I"."TYPE#"=4 OR
+              "I"."TYPE#"=6 OR "I"."TYPE#"=7 OR "I"."TYPE#"=9))=1) AND ("O"."TYPE#"<>1 AND "O"."TYPE#"<>2 AND "O"."TYPE#"<>6 OR
+              NOT EXISTS (SELECT /*+ LEADING ("I" "T" "IO") USE_NL ("IO") INDEX ("IO" "I_OBJ1") OPT_ESTIMATE (@"SEL$47" TABLE
+              "T"@"SEL$47" SCALE_ROWS=0.100224 ) USE_NL ("T") CLUSTER ("T") INDEX_RS_ASC ("I" "I_IND1") */ 0 FROM "SYS"."OBJ$"
+              "IO","SYS"."TAB$" "T","SYS"."IND$" "I" WHERE "I"."OBJ#"=:B2 AND
+              BITAND("T"."PROPERTY",36893488147419103232)=36893488147419103232 AND "I"."BO#"="T"."OBJ#" AND "IO"."OBJ#"="I"."BO#"
+              AND "IO"."TYPE#"=2) AND "O"."TYPE#"=1 OR  (SELECT /*+ INDEX ("T" "I_OBJ#") */ 1 FROM "SYS"."TAB$" "T" WHERE
+              "T"."OBJ#"=:B3 AND BITAND("T"."PROPERTY",36893488147419103232)=0)=1 AND "O"."TYPE#"=2 OR  (SELECT /*+ INDEX_RS_ASC
+              ("S" "I_SEQ1") */ 1 FROM "SYS"."SEQ$" "S" WHERE "S"."OBJ#"=:B4 AND (BITAND("S"."FLAGS",1024)=0 OR "S"."FLAGS" IS
+              NULL))=1 AND "O"."TYPE#"=6) AND (("O"."SPARE3"=USERENV('SCHEMAID') OR "O"."SPARE3"=1) OR  EXISTS (SELECT /*+ LEADING
+              ("OBJAUTH$" "X$KZSRO") OPT_ESTIMATE (@"SEL$05764D7B" NLJ_INDEX_FILTER "OBJAUTH$"@"SEL$50" ("X$KZSRO"@"SEL$52")
+              "I_OBJAUTH1" SCALE_ROWS=151763.849200 ) INDEX ("OBJAUTH$" "I_OBJAUTH1") OPT_ESTIMATE (@"SEL$05764D7B" TABLE
+              "X$KZSRO"@"SEL$52" SCALE_ROWS=13.000000 ) USE_NL ("X$KZSRO") FULL ("X$KZSRO") */ 0 FROM "SYS"."OBJAUTH$"
+              "OBJAUTH$","SYS"."X$KZSRO" "X$KZSRO" WHERE "GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3) AND "OBJ#"=:B5 AND
+              ("PRIVILEGE#"=3 OR "PRIVILEGE#"=6 OR "PRIVILEGE#"=7 OR "PRIVILEGE#"=9 OR "PRIVILEGE#"=10 OR "PRIVILEGE#"=11 OR
+              "PRIVILEGE#"=12 OR "PRIVILEGE#"=16 OR "PRIVILEGE#"=17 OR "PRIVILEGE#"=18)) AND "O"."TYPE#"<>7 AND "O"."TYPE#"<>8 AND
+              "O"."TYPE#"<>9 AND "O"."TYPE#"<>11 AND "O"."TYPE#"<>12 AND "O"."TYPE#"<>13 AND "O"."TYPE#"<>14 AND "O"."TYPE#"<>28
+              AND "O"."TYPE#"<>29 AND "O"."TYPE#"<>30 AND "O"."TYPE#"<>56 AND "O"."TYPE#"<>93 OR ("O"."TYPE#"=7 OR "O"."TYPE#"=8 OR
+              "O"."TYPE#"=9 OR "O"."TYPE#"=28 OR "O"."TYPE#"=29 OR "O"."TYPE#"=30 OR "O"."TYPE#"=56) AND ( EXISTS (SELECT /*+
+              LEADING ("OA" "X$KZSRO") OPT_ESTIMATE (@"SEL$7A521E49" NLJ_INDEX_FILTER "OA"@"SEL$53" ("X$KZSRO"@"SEL$55")
+              "I_OBJAUTH1" SCALE_ROWS=158336.927500 ) INDEX ("OA" "I_OBJAUTH1") OPT_ESTIMATE (@"SEL$7A521E49" TABLE
+              "X$KZSRO"@"SEL$55" SCALE_ROWS=13.000000 ) USE_NL ("X$KZSRO") FULL ("X$KZSRO") */ 0 FROM "SYS"."OBJAUTH$"
+              "OA","SYS"."X$KZSRO" "X$KZSRO" WHERE "OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3) AND "OA"."OBJ#"=:B6
+              AND ("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26)) OR ORA_CHECK_SYS_PRIVILEGE("O"."SPARE3","O"."TYPE#")=1) OR
+              "O"."TYPE#"=19 AND ( EXISTS (SELECT /*+ LEADING ("TABPART$" "OBJAUTH$" "X$KZSRO") INDEX_RS_ASC ("TABPART$"
+              "I_TABPART_OBJ$") USE_NL ("OBJAUTH$") INDEX ("OBJAUTH$" "I_OBJAUTH1") OPT_ESTIMATE (@"SEL$2103B7C8" TABLE
+              "X$KZSRO"@"SEL$59" SCALE_ROWS=13.000000 ) USE_NL ("X$KZSRO") FULL ("X$KZSRO") */ 0 FROM "SYS"."TABPART$"
+              "TABPART$","SYS"."OBJAUTH$" "OBJAUTH$","SYS"."X$KZSRO" "X$KZSRO" WHERE "GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR
+              "CON_ID"=3) AND "BO#"="OBJ#" AND ("PRIVILEGE#"=9 OR "PRIVILEGE#"=17) AND "OBJ#"=:B7) OR  EXISTS (SELECT /*+ LEADING
+              ("TABCOMPART$" "OBJAUTH$" "X$KZSRO") INDEX_RS_ASC ("TABCOMPART$" "I_TABCOMPART$") USE_NL ("OBJAUTH$") INDEX
+              ("OBJAUTH$" "I_OBJAUTH1") OPT_ESTIMATE (@"SEL$52004126" TABLE "X$KZSRO"@"SEL$63" SCALE_ROWS=13.000000 ) USE_NL
+              ("X$KZSRO") FULL ("X$KZSRO") */ 0 FROM "SYS"."TABCOMPART$" "TABCOMPART$","SYS"."OBJAUTH$" "OBJAUTH$","SYS"."X$KZSRO"
+              "X$KZSRO" WHERE "GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3) AND "BO#"="OBJ#" AND ("PRIVILEGE#"=9 OR
+              "PRIVILEGE#"=17) AND "OBJ#"=:B8)) OR  EXISTS (SELECT /*+ LEADING ("SP" "CP" "OBJAUTH$" "X$KZSRO") USE_NL ("CP")
+              INDEX_RS_ASC ("CP" "I_TABCOMPART$") INDEX_RS_ASC ("SP" "I_TABSUBPART$_OBJ$") USE_NL ("OBJAUTH$") INDEX ("OBJAUTH$"
+              "I_OBJAUTH1") OPT_ESTIMATE (@"SEL$ACD)
+  56 - access("X"."KTCXBSES"="S"."ADDR")
+  59 - access("X"."KTCXBXBA"="L"."KSSOBOWN")
+  60 - filter("X"."INST_ID"=:INST_ID AND ("X"."CON_ID"=0 OR "X"."CON_ID"=3))
+  62 - access("L"."KTADMTAB"="O"."OBJ#")
+  63 - filter("O"."LINKNAME" IS NULL AND "O"."NAME"<>'_NEXT_OBJECT' AND "O"."NAME"<>'_default_auditing_options_' AND
+              BITAND("O"."FLAGS",128)=0)
+  65 - access("O"."OWNER#"="U"."USER#")
+  67 - access("O"."SPARE3"="U"."USER#")
+  68 - filter("WB"."WAITING_SESSION"="S"."INDX" OR "WB"."HOLDING_SESSION"="S"."INDX")
+  70 - filter("I"."TYPE#"=1 OR "I"."TYPE#"=2 OR "I"."TYPE#"=3 OR "I"."TYPE#"=4 OR "I"."TYPE#"=6 OR "I"."TYPE#"=7 OR
+              "I"."TYPE#"=9)
+  71 - access("I"."OBJ#"=:B1)
+  75 - access("I"."OBJ#"=:B1)
+  76 - filter(BITAND("T"."PROPERTY",36893488147419103232)=36893488147419103232 AND "I"."BO#"="T"."OBJ#")
+  77 - access("IO"."OBJ#"="I"."BO#" AND "IO"."TYPE#"=2)
+       filter("IO"."TYPE#"=2)
+  78 - filter(BITAND("T"."PROPERTY",36893488147419103232)=0)
+  79 - access("T"."OBJ#"=:B1)
+  80 - filter(BITAND("S"."FLAGS",1024)=0 OR "S"."FLAGS" IS NULL)
+  81 - access("S"."OBJ#"=:B1)
+  83 - access("OBJ#"=:B1)
+       filter("PRIVILEGE#"=3 OR "PRIVILEGE#"=6 OR "PRIVILEGE#"=7 OR "PRIVILEGE#"=9 OR "PRIVILEGE#"=10 OR
+              "PRIVILEGE#"=11 OR "PRIVILEGE#"=12 OR "PRIVILEGE#"=16 OR "PRIVILEGE#"=17 OR "PRIVILEGE#"=18)
+  84 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  86 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26)
+  87 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  91 - access("OBJ#"=:B1)
+  92 - access("BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+  93 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  97 - access("OBJ#"=:B1)
+  98 - access("BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+  99 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 104 - access("SP"."OBJ#"=:B1)
+ 106 - access("SP"."POBJ#"="CP"."OBJ#")
+ 107 - access("CP"."BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+ 108 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 111 - filter(BITAND("T"."PROPERTY",24)=0)
+ 112 - access("T"."OBJ#"=:B1)
+ 113 - access("OA"."OBJ#"="T"."BASEOBJECT" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26)
+ 114 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 120 - access("O"."SPARE3"=:B1 AND "O"."NAME"=:B2 AND "O"."TYPE#"=9)
+       filter("O"."TYPE#"=9)
+ 122 - filter("CON_ID"=0 OR "CON_ID"=3)
+ 123 - access("O"."OWNER#"="U"."USER#")
+ 124 - access("OA"."OBJ#"="O"."OBJ#" AND "OA"."GRANTEE#"="KZSROROL" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26 AND "OA"."GRANTEE#"="KZSROROL")
+ 125 - access("DEP"."D_OBJ#"=:B1)
+ 126 - filter("DEP"."P_OBJ#"="O"."OBJ#")
+ 130 - access("I"."OBJ#"=:B1)
+ 131 - access("OA"."OBJ#"="I"."BO#")
+ 132 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 134 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26)
+ 135 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 141 - access("O"."SPARE3"=:B1 AND "O"."NAME"=:B2 AND "O"."TYPE#"=13)
+       filter("O"."TYPE#"=13)
+ 143 - filter("CON_ID"=0 OR "CON_ID"=3)
+ 144 - access("O"."OWNER#"="U"."USER#")
+ 145 - access("OA"."OBJ#"="O"."OBJ#" AND "OA"."GRANTEE#"="KZSROROL" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26 AND "OA"."GRANTEE#"="KZSROROL")
+ 146 - access("DEP"."D_OBJ#"=:B1)
+ 147 - filter("DEP"."P_OBJ#"="O"."OBJ#")
+ 151 - access("OBJ#"=:B1)
+ 152 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 157 - access("C"."OBJ#"=:B1)
+ 159 - access("D"."D_OBJ#"=:B1)
+ 160 - access("DO"."OBJ#"="D"."P_OBJ#" AND "DO"."TYPE#"=92)
+       filter("DO"."TYPE#"=92)
+ 162 - access("OBJ#"=:B1)
+ 163 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 165 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=0 OR "OA"."PRIVILEGE#"=29)
+ 166 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 167 - filter("TYPE#"=:B1)
+ 168 - access("UE"."USER#"=:B1)
+ 169 - filter("UE"."TYPE#"=:B1)
+ 170 - access("UE"."USER#"=:B1)
+ 172 - access("U2"."TYPE#"=2 AND "U2"."SPARE2"=TO_NUMBER(SYS_CONTEXT('userenv','current_edition_id')))
+       filter("U2"."TYPE#"=2 AND "U2"."SPARE2"=TO_NUMBER(SYS_CONTEXT('userenv','current_edition_id')))
+ 173 - access("O2"."DATAOBJ#"=:B1 AND "O2"."TYPE#"=88 AND "O2"."OWNER#"="U2"."USER#")
+ 174 - filter("S"."INDX"="WB"."WAITING_SESSION" AND BITAND("S"."KSUSEFLG",1)<>0 AND BITAND("S"."KSSPAFLG",1)<>0 AND
+              "S"."INST_ID"=:INST_ID AND ("S"."CON_ID"=0 OR "S"."CON_ID"=3))
+ 175 - filter("S"."INDX"="W"."KSLWTSID")
+ 176 - filter("W"."KSLWTEVT"="E"."INDX")
+ 177 - access("HOLDING_SESSION"=PRIOR NULL)
+       filter("HOLDING_SESSION" IS NULL)
+
+Hint Report (identified by operation id / Query Block Name / Object Alias):
+Total hints for statement: 368 (U - Unused (6), N - Unresolved (362))
+---------------------------------------------------------------------------
+
+   0 -  STATEMENT
+         U -  IGNORE_OPTIM_EMBEDDED_HINTS / hint overridden by another in parent query block
+         U -  OPTIMIZER_FEATURES_ENABLE(default) / hint overridden by another in parent query block
+
+   0 -  SEL$00FDCA6B
+         N -  MERGE(@"SEL$00FDCA6B" >"SEL$6B4ABCF9")
+
+   0 -  SEL$01CD830C
+         N -  FULL(@"SEL$01CD830C" "X$KZSRO"@"SEL$6B4ABCF3")
+         N -  INDEX(@"SEL$01CD830C" "OBJAUTH$"@"SEL$6B4ABCF1" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$01CD830C" "OBJAUTH$"@"SEL$6B4ABCF1" "X$KZSRO"@"SEL$6B4ABCF3")
+         N -  USE_NL(@"SEL$01CD830C" "X$KZSRO"@"SEL$6B4ABCF3")
+
+   0 -  SEL$0633C41F
+         N -  UNNEST(@"SEL$0633C41F")
+
+   0 -  SEL$08B63585
+         N -  UNNEST(@"SEL$08B63585")
+
+   0 -  SEL$08B63586
+         N -  UNNEST(@"SEL$08B63586")
+
+   0 -  SEL$0905FE09
+         N -  FULL(@"SEL$0905FE09" "X$KZSRO"@"SEL$6B4ABCF6")
+         N -  INDEX(@"SEL$0905FE09" "OA"@"SEL$6B4ABCF4" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$0905FE09" "OA"@"SEL$6B4ABCF4" "X$KZSRO"@"SEL$6B4ABCF6")
+         N -  USE_NL(@"SEL$0905FE09" "X$KZSRO"@"SEL$6B4ABCF6")
+
+   0 -  SEL$0957094C
+         N -  FULL(@"SEL$0957094C" "X$KZSRO"@"SEL$6B4ABCD9")
+         N -  INDEX(@"SEL$0957094C" "OA"@"SEL$6B4ABCD7" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$0957094C" "T"@"SEL$6B4ABCD7" ("TRIGGER$"."OBJ#"))
+         N -  LEADING(@"SEL$0957094C" "T"@"SEL$6B4ABCD7" "OA"@"SEL$6B4ABCD7" "X$KZSRO"@"SEL$6B4ABCD9")
+         N -  USE_NL(@"SEL$0957094C" "OA"@"SEL$6B4ABCD7")
+         N -  USE_NL(@"SEL$0957094C" "X$KZSRO"@"SEL$6B4ABCD9")
+
+   0 -  SEL$0C205298
+         N -  UNNEST(@"SEL$0C205298")
+
+   0 -  SEL$0C205299
+         N -  UNNEST(@"SEL$0C205299")
+
+   0 -  SEL$0D644DFA
+         N -  FULL(@"SEL$0D644DFA" "X$KZSRO"@"SEL$6B4ABCF6")
+         N -  INDEX(@"SEL$0D644DFA" "OA"@"SEL$6B4ABCF4" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$0D644DFA" "OA"@"SEL$6B4ABCF4" "X$KZSRO"@"SEL$6B4ABCF6")
+         N -  USE_NL(@"SEL$0D644DFA" "X$KZSRO"@"SEL$6B4ABCF6")
+
+   0 -  SEL$0F993D10
+         N -  MERGE(@"SEL$0F993D10" >"SEL$6B4ABCF8")
+
+   0 -  SEL$13D809EE
+         N -  FULL(@"SEL$13D809EE" "X$KZSRO"@"SEL$6B4ABCD2")
+         N -  INDEX(@"SEL$13D809EE" "OBJAUTH$"@"SEL$6B4ABCD0" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$13D809EE" "TABCOMPART$"@"SEL$6B4ABCCF" ("TABCOMPART$"."OBJ#"))
+         N -  LEADING(@"SEL$13D809EE" "TABCOMPART$"@"SEL$6B4ABCCF" "OBJAUTH$"@"SEL$6B4ABCD0" "X$KZSRO"@"SEL$6B4ABCD2")
+         N -  USE_NL(@"SEL$13D809EE" "OBJAUTH$"@"SEL$6B4ABCD0")
+         N -  USE_NL(@"SEL$13D809EE" "X$KZSRO"@"SEL$6B4ABCD2")
+
+   0 -  SEL$154DF20A
+         N -  FULL(@"SEL$154DF20A" "X$KZSRO"@"SEL$6B4ABCDD")
+         N -  INDEX(@"SEL$154DF20A" "DEP"@"SEL$6B4ABCDA" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  INDEX(@"SEL$154DF20A" "O"@"SEL$6B4ABCDB" ("OBJ$"."SPARE3" "OBJ$"."NAME" "OBJ$"."NAMESPACE" "OBJ$"."TYPE#" "OBJ$"."OWNER#" "OBJ$"."REMOTEOWNER" "OBJ$"."LINKNAME" "OBJ$"."SUBNAME" "OBJ$"."
+OBJ#"))
+         N -  INDEX(@"SEL$154DF20A" "OA"@"SEL$6B4ABCDA" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX(@"SEL$154DF20A" "U"@"SEL$6B4ABCDB" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$154DF20A" "O"@"SEL$6B4ABCDB" "X$KZSRO"@"SEL$6B4ABCDD" "U"@"SEL$6B4ABCDB" "OA"@"SEL$6B4ABCDA" "DEP"@"SEL$6B4ABCDA")
+         N -  NLJ_BATCHING(@"SEL$154DF20A" "DEP"@"SEL$6B4ABCDA")
+         N -  USE_MERGE_CARTESIAN(@"SEL$154DF20A" "X$KZSRO"@"SEL$6B4ABCDD")
+         N -  USE_NL(@"SEL$154DF20A" "DEP"@"SEL$6B4ABCDA")
+         N -  USE_NL(@"SEL$154DF20A" "OA"@"SEL$6B4ABCDA")
+         N -  USE_NL(@"SEL$154DF20A" "U"@"SEL$6B4ABCDB")
+
+   0 -  SEL$16D8329C
+         N -  FULL(@"SEL$16D8329C" "X$KZSRO"@"SEL$6B4ABCE4")
+         N -  INDEX(@"SEL$16D8329C" "OA"@"SEL$6B4ABCE2" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$16D8329C" "OA"@"SEL$6B4ABCE2" "X$KZSRO"@"SEL$6B4ABCE4")
+         N -  USE_NL(@"SEL$16D8329C" "X$KZSRO"@"SEL$6B4ABCE4")
+
+   0 -  SEL$19947697
+         N -  FULL(@"SEL$19947697" "L"@"SEL$6B4ABCBA")
+         N -  FULL(@"SEL$19947697" "S"@"SEL$6B4ABCBA")
+         N -  FULL(@"SEL$19947697" "X"@"SEL$6B4ABCBA")
+         N -  INDEX(@"SEL$19947697" "O"@"SEL$6B4ABCBD" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX(@"SEL$19947697" "U"@"SEL$6B4ABCBB" "I_USER#")
+         N -  INDEX(@"SEL$19947697" "U"@"SEL$6B4ABCBD" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$19947697" "X"@"SEL$6B4ABCBA" "L"@"SEL$6B4ABCBA" "O"@"SEL$6B4ABCBD" "S"@"SEL$6B4ABCBA" "U"@"SEL$6B4ABCBD" "U"@"SEL$6B4ABCBB" "WB"@"SEL$6B4ABCB7")
+         N -  NLJ_BATCHING(@"SEL$19947697" "O"@"SEL$6B4ABCBD")
+         N -  ORDER_SUBQ(@"SEL$19947697" "SEL$6B4ABCBE" "SEL$6B4ABCBF" "SEL$6B4ABCC0" "SEL$4D21897C" "SEL$6D148BBF" "SEL$8BABB3BE" "SEL$F4FAE185" "SEL$48B89E47" "SEL$ECCFE4C4" "SEL$E3B071E6" "SEL$C492
+CE4B" "SEL$0957094C" "SEL$F6166D08" "SEL$6B4ABCE9" "SEL$0905FE09" "SEL$6B4ABCEE" "SEL$A7440234" "SEL$6B4ABCC1" "SEL$6B4ABCC2" "SEL$6B4ABCC3" "SEL$6B4ABCC4")
+         N -  USE_HASH(@"SEL$19947697" "L"@"SEL$6B4ABCBA")
+         N -  USE_HASH(@"SEL$19947697" "S"@"SEL$6B4ABCBA")
+         N -  USE_NL(@"SEL$19947697" "O"@"SEL$6B4ABCBD")
+         N -  USE_NL(@"SEL$19947697" "U"@"SEL$6B4ABCBB")
+         N -  USE_NL(@"SEL$19947697" "U"@"SEL$6B4ABCBD")
+         N -  USE_NL(@"SEL$19947697" "WB"@"SEL$6B4ABCB7")
+
+   0 -  SEL$1A39D86D
+         N -  FULL(@"SEL$1A39D86D" "T1"@"SEL$1A39D86D")
+
+   0 -  SEL$1A39D86E
+         N -  FULL(@"SEL$1A39D86E" "T1"@"SEL$1A39D86E")
+
+   0 -  SEL$1A39D86F
+         N -  FULL(@"SEL$1A39D86F" "T1"@"SEL$1A39D86F")
+
+   0 -  SEL$1A39D870
+         N -  FULL(@"SEL$1A39D870" "T1"@"SEL$1A39D870")
+
+   0 -  SEL$1D215B22
+         N -  FULL(@"SEL$1D215B22" "X$KZSRO"@"SEL$6B4ABCC7")
+         N -  INDEX(@"SEL$1D215B22" "OBJAUTH$"@"SEL$6B4ABCC5" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$1D215B22" "OBJAUTH$"@"SEL$6B4ABCC5" "X$KZSRO"@"SEL$6B4ABCC7")
+         N -  USE_NL(@"SEL$1D215B22" "X$KZSRO"@"SEL$6B4ABCC7")
+
+   0 -  SEL$2014A13F
+         N -  FULL(@"SEL$2014A13F" "X$OCT"@"SEL$6B4ABCFC")
+
+   0 -  SEL$20800815
+         N -  FULL(@"SEL$20800815" "X$KZSRO"@"SEL$6B4ABCE1")
+         N -  INDEX(@"SEL$20800815" "OA"@"SEL$6B4ABCDF" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$20800815" "I"@"SEL$6B4ABCDE" ("IND$"."OBJ#"))
+         N -  LEADING(@"SEL$20800815" "I"@"SEL$6B4ABCDE" "OA"@"SEL$6B4ABCDF" "X$KZSRO"@"SEL$6B4ABCE1")
+         N -  USE_NL(@"SEL$20800815" "OA"@"SEL$6B4ABCDF")
+         N -  USE_NL(@"SEL$20800815" "X$KZSRO"@"SEL$6B4ABCE1")
+
+   0 -  SEL$244403B0
+         N -  MERGE(@"SEL$244403B0" >"SEL$6B4ABCB8")
+
+   0 -  SEL$244403B1
+         N -  MERGE(@"SEL$244403B1" >"SEL$6B4ABCB8")
+
+   0 -  SEL$2AD13C3E
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$2AD13C3E" "D"@"SEL$6B4ABCF0")
+         N -  INDEX(@"SEL$2AD13C3E" "C"@"SEL$6B4ABCF0" ("OLAP_CUBES$"."OBJ#"))
+         N -  INDEX(@"SEL$2AD13C3E" "DO"@"SEL$6B4ABCF0" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX_RS_ASC(@"SEL$2AD13C3E" "D"@"SEL$6B4ABCF0" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  LEADING(@"SEL$2AD13C3E" "C"@"SEL$6B4ABCF0" "D"@"SEL$6B4ABCF0" "DO"@"SEL$6B4ABCF0")
+         N -  USE_NL(@"SEL$2AD13C3E" "D"@"SEL$6B4ABCF0")
+         N -  USE_NL(@"SEL$2AD13C3E" "DO"@"SEL$6B4ABCF0")
+
+   0 -  SEL$2AD13C3F
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$2AD13C3F" "D"@"SEL$6B4ABCF0")
+         N -  INDEX(@"SEL$2AD13C3F" "C"@"SEL$6B4ABCF0" ("OLAP_CUBES$"."OBJ#"))
+         N -  INDEX(@"SEL$2AD13C3F" "DO"@"SEL$6B4ABCF0" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX_RS_ASC(@"SEL$2AD13C3F" "D"@"SEL$6B4ABCF0" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  LEADING(@"SEL$2AD13C3F" "C"@"SEL$6B4ABCF0" "D"@"SEL$6B4ABCF0" "DO"@"SEL$6B4ABCF0")
+         N -  USE_NL(@"SEL$2AD13C3F" "D"@"SEL$6B4ABCF0")
+         N -  USE_NL(@"SEL$2AD13C3F" "DO"@"SEL$6B4ABCF0")
+
+   0 -  SEL$2C5E6FAB
+         N -  MERGE(@"SEL$2C5E6FAB" >"SEL$6B4ABCB7")
+
+   0 -  SEL$2EEFBA27
+         N -  FULL(@"SEL$2EEFBA27" "X$KZSRO"@"SEL$6B4ABCED")
+         N -  INDEX(@"SEL$2EEFBA27" "OBJAUTH$"@"SEL$6B4ABCEB" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$2EEFBA27" "OBJAUTH$"@"SEL$6B4ABCEB" "X$KZSRO"@"SEL$6B4ABCED")
+         N -  USE_NL(@"SEL$2EEFBA27" "X$KZSRO"@"SEL$6B4ABCED")
+
+   0 -  SEL$34EB7595
+         N -  UNNEST(@"SEL$34EB7595")
+
+   0 -  SEL$34EB7596
+         N -  UNNEST(@"SEL$34EB7596")
+
+   0 -  SEL$36EC8EE9
+         N -  MERGE(@"SEL$36EC8EE9" >"SEL$6B4ABCB6")
+
+   0 -  SEL$38481F9A
+         N -  UNNEST(@"SEL$38481F9A")
+
+   0 -  SEL$38481F9B
+         N -  UNNEST(@"SEL$38481F9B")
+
+   0 -  SEL$3C1EEEE9
+         N -  MERGE(@"SEL$3C1EEEE9" >"SEL$6B4ABCF7")
+
+   0 -  SEL$3CE25E93
+         N -  MERGE(@"SEL$3CE25E93" >"SEL$6B4ABCF9")
+
+   0 -  SEL$4045D5A5
+         N -  UNNEST(@"SEL$4045D5A5")
+
+   0 -  SEL$4045D5A6
+         N -  UNNEST(@"SEL$4045D5A6")
+
+   0 -  SEL$48B89E47
+         N -  FULL(@"SEL$48B89E47" "X$KZSRO"@"SEL$6B4ABCCE")
+         N -  INDEX(@"SEL$48B89E47" "OBJAUTH$"@"SEL$6B4ABCCC" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$48B89E47" "TABPART$"@"SEL$6B4ABCCB" ("TABPART$"."OBJ#"))
+         N -  LEADING(@"SEL$48B89E47" "TABPART$"@"SEL$6B4ABCCB" "OBJAUTH$"@"SEL$6B4ABCCC" "X$KZSRO"@"SEL$6B4ABCCE")
+         N -  USE_NL(@"SEL$48B89E47" "OBJAUTH$"@"SEL$6B4ABCCC")
+         N -  USE_NL(@"SEL$48B89E47" "X$KZSRO"@"SEL$6B4ABCCE")
+
+   0 -  SEL$49E29BA5
+         N -  FULL(@"SEL$49E29BA5" "X$KZSRO"@"SEL$6B4ABCD9")
+         N -  INDEX(@"SEL$49E29BA5" "OA"@"SEL$6B4ABCD7" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$49E29BA5" "T"@"SEL$6B4ABCD7" ("TRIGGER$"."OBJ#"))
+         N -  LEADING(@"SEL$49E29BA5" "T"@"SEL$6B4ABCD7" "OA"@"SEL$6B4ABCD7" "X$KZSRO"@"SEL$6B4ABCD9")
+         N -  USE_NL(@"SEL$49E29BA5" "OA"@"SEL$6B4ABCD7")
+         N -  USE_NL(@"SEL$49E29BA5" "X$KZSRO"@"SEL$6B4ABCD9")
+
+   0 -  SEL$4B857D50
+         N -  UNNEST(@"SEL$4B857D50")
+
+   0 -  SEL$4D21897C
+         N -  FULL(@"SEL$4D21897C" "X$KZSRO"@"SEL$6B4ABCC7")
+         N -  INDEX(@"SEL$4D21897C" "OBJAUTH$"@"SEL$6B4ABCC5" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$4D21897C" "OBJAUTH$"@"SEL$6B4ABCC5" "X$KZSRO"@"SEL$6B4ABCC7")
+         N -  USE_NL(@"SEL$4D21897C" "X$KZSRO"@"SEL$6B4ABCC7")
+
+   0 -  SEL$4E88FFA9
+         N -  UNNEST(@"SEL$4E88FFA9")
+
+   0 -  SEL$58828ACD
+         N -  UNNEST(@"SEL$58828ACD")
+
+   0 -  SEL$5A4C6484
+         N -  MERGE(@"SEL$5A4C6484" >"SEL$6B4ABCFD")
+
+   0 -  SEL$5A4C6485
+         N -  MERGE(@"SEL$5A4C6485" >"SEL$6B4ABCFD")
+
+   0 -  SEL$5AAE4757
+         N -  MERGE(@"SEL$5AAE4757" >"SEL$6B4ABCF8")
+
+   0 -  SEL$5B5D7CC0
+         N -  UNNEST(@"SEL$5B5D7CC0")
+
+   0 -  SEL$5B5D7CC1
+         N -  UNNEST(@"SEL$5B5D7CC1")
+
+   0 -  SEL$5C507013
+         N -  FULL(@"SEL$5C507013" "X$KZSRO"@"SEL$6B4ABCE8")
+         N -  INDEX(@"SEL$5C507013" "DEP"@"SEL$6B4ABCE5" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  INDEX(@"SEL$5C507013" "O"@"SEL$6B4ABCE6" ("OBJ$"."SPARE3" "OBJ$"."NAME" "OBJ$"."NAMESPACE" "OBJ$"."TYPE#" "OBJ$"."OWNER#" "OBJ$"."REMOTEOWNER" "OBJ$"."LINKNAME" "OBJ$"."SUBNAME" "OBJ$"."
+OBJ#"))
+         N -  INDEX(@"SEL$5C507013" "OA"@"SEL$6B4ABCE5" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX(@"SEL$5C507013" "U"@"SEL$6B4ABCE6" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$5C507013" "O"@"SEL$6B4ABCE6" "X$KZSRO"@"SEL$6B4ABCE8" "U"@"SEL$6B4ABCE6" "OA"@"SEL$6B4ABCE5" "DEP"@"SEL$6B4ABCE5")
+         N -  NLJ_BATCHING(@"SEL$5C507013" "DEP"@"SEL$6B4ABCE5")
+         N -  USE_MERGE_CARTESIAN(@"SEL$5C507013" "X$KZSRO"@"SEL$6B4ABCE8")
+         N -  USE_NL(@"SEL$5C507013" "DEP"@"SEL$6B4ABCE5")
+         N -  USE_NL(@"SEL$5C507013" "OA"@"SEL$6B4ABCE5")
+         N -  USE_NL(@"SEL$5C507013" "U"@"SEL$6B4ABCE6")
+
+   0 -  SEL$694A510F
+         N -  MERGE(@"SEL$694A510F" >"SEL$6B4ABCFA")
+
+   0 -  SEL$694A5110
+         N -  MERGE(@"SEL$694A5110" >"SEL$6B4ABCFA")
+
+   0 -  SEL$6A6501AE
+         N -  FULL(@"SEL$6A6501AE" "X$KZSRO"@"SEL$6B4ABCCA")
+         N -  INDEX(@"SEL$6A6501AE" "OA"@"SEL$6B4ABCC8" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$6A6501AE" "OA"@"SEL$6B4ABCC8" "X$KZSRO"@"SEL$6B4ABCCA")
+         N -  USE_NL(@"SEL$6A6501AE" "X$KZSRO"@"SEL$6B4ABCCA")
+
+   0 -  SEL$6B4ABCBA
+         N -  MERGE(@"SEL$6B4ABCBA" >"SEL$6B4ABCB9")
+         N -  MERGE(@"SEL$6B4ABCBA" >"SEL$6B4ABCB9")
+
+   0 -  SEL$6B4ABCBC
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBC" "S"@"SEL$6B4ABCBC" ("SUM$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBC" "S"@"SEL$6B4ABCBC" ("SUM$"."OBJ#"))
+
+   0 -  SEL$6B4ABCBD
+         N -  MERGE(@"SEL$6B4ABCBD" >"SEL$6B4ABCBB")
+         N -  MERGE(@"SEL$6B4ABCBD" >"SEL$6B4ABCBB")
+
+   0 -  SEL$6B4ABCBE
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$6B4ABCBE" "UE"@"SEL$6B4ABCBE")
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$6B4ABCBE" "UE"@"SEL$6B4ABCBE")
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBE" "UE"@"SEL$6B4ABCBE" ("USER_EDITIONING$"."USER#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBE" "UE"@"SEL$6B4ABCBE" ("USER_EDITIONING$"."USER#"))
+
+   0 -  SEL$6B4ABCBF
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$6B4ABCBF" "UE"@"SEL$6B4ABCBF")
+         N -  BATCH_TABLE_ACCESS_BY_ROWID(@"SEL$6B4ABCBF" "UE"@"SEL$6B4ABCBF")
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBF" "UE"@"SEL$6B4ABCBF" ("USER_EDITIONING$"."USER#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCBF" "UE"@"SEL$6B4ABCBF" ("USER_EDITIONING$"."USER#"))
+
+   0 -  SEL$6B4ABCC0
+         N -  INDEX(@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0" ("OBJ$"."DATAOBJ#" "OBJ$"."TYPE#" "OBJ$"."OWNER#"))
+         N -  INDEX(@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0" ("OBJ$"."DATAOBJ#" "OBJ$"."TYPE#" "OBJ$"."OWNER#"))
+         N -  INDEX_SS(@"SEL$6B4ABCC0" "U2"@"SEL$6B4ABCC0" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  INDEX_SS(@"SEL$6B4ABCC0" "U2"@"SEL$6B4ABCC0" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$6B4ABCC0" "U2"@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0")
+         N -  LEADING(@"SEL$6B4ABCC0" "U2"@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0")
+         N -  USE_NL(@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0")
+         N -  USE_NL(@"SEL$6B4ABCC0" "O2"@"SEL$6B4ABCC0")
+
+   0 -  SEL$6B4ABCC1
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC1" "I"@"SEL$6B4ABCC1" ("IND$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC1" "I"@"SEL$6B4ABCC1" ("IND$"."OBJ#"))
+
+   0 -  SEL$6B4ABCC2
+         N -  CLUSTER(@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2")
+         N -  CLUSTER(@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2")
+         N -  INDEX(@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX(@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC2" "I"@"SEL$6B4ABCC2" ("IND$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC2" "I"@"SEL$6B4ABCC2" ("IND$"."OBJ#"))
+         N -  LEADING(@"SEL$6B4ABCC2" "I"@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2")
+         N -  LEADING(@"SEL$6B4ABCC2" "I"@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2")
+         N -  USE_NL(@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2")
+         N -  USE_NL(@"SEL$6B4ABCC2" "IO"@"SEL$6B4ABCC2")
+         N -  USE_NL(@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2")
+         N -  USE_NL(@"SEL$6B4ABCC2" "T"@"SEL$6B4ABCC2")
+
+   0 -  SEL$6B4ABCC3
+         N -  INDEX(@"SEL$6B4ABCC3" "T"@"SEL$6B4ABCC3" "I_OBJ#")
+         N -  INDEX(@"SEL$6B4ABCC3" "T"@"SEL$6B4ABCC3" "I_OBJ#")
+
+   0 -  SEL$6B4ABCC4
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC4" "S"@"SEL$6B4ABCC4" ("SEQ$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$6B4ABCC4" "S"@"SEL$6B4ABCC4" ("SEQ$"."OBJ#"))
+
+   0 -  SEL$6B4ABCC7
+         N -  MERGE(@"SEL$6B4ABCC7" >"SEL$6B4ABCC6")
+         N -  MERGE(@"SEL$6B4ABCC7" >"SEL$6B4ABCC6")
+
+   0 -  SEL$6B4ABCCA
+         N -  MERGE(@"SEL$6B4ABCCA" >"SEL$6B4ABCC9")
+         N -  MERGE(@"SEL$6B4ABCCA" >"SEL$6B4ABCC9")
+
+   0 -  SEL$6B4ABCCE
+         N -  MERGE(@"SEL$6B4ABCCE" >"SEL$6B4ABCCD")
+         N -  MERGE(@"SEL$6B4ABCCE" >"SEL$6B4ABCCD")
+
+   0 -  SEL$6B4ABCD2
+         N -  MERGE(@"SEL$6B4ABCD2" >"SEL$6B4ABCD1")
+         N -  MERGE(@"SEL$6B4ABCD2" >"SEL$6B4ABCD1")
+
+   0 -  SEL$6B4ABCD6
+         N -  MERGE(@"SEL$6B4ABCD6" >"SEL$6B4ABCD5")
+         N -  MERGE(@"SEL$6B4ABCD6" >"SEL$6B4ABCD5")
+
+   0 -  SEL$6B4ABCD9
+         N -  MERGE(@"SEL$6B4ABCD9" >"SEL$6B4ABCD8")
+         N -  MERGE(@"SEL$6B4ABCD9" >"SEL$6B4ABCD8")
+
+   0 -  SEL$6B4ABCDB
+         N -  MERGE(@"SEL$6B4ABCDB" >"SEL$6B4ABCDA")
+         N -  MERGE(@"SEL$6B4ABCDB" >"SEL$6B4ABCDA")
+
+   0 -  SEL$6B4ABCDD
+         N -  MERGE(@"SEL$6B4ABCDD" >"SEL$6B4ABCDC")
+         N -  MERGE(@"SEL$6B4ABCDD" >"SEL$6B4ABCDC")
+
+   0 -  SEL$6B4ABCE1
+         N -  MERGE(@"SEL$6B4ABCE1" >"SEL$6B4ABCE0")
+         N -  MERGE(@"SEL$6B4ABCE1" >"SEL$6B4ABCE0")
+
+   0 -  SEL$6B4ABCE4
+         N -  MERGE(@"SEL$6B4ABCE4" >"SEL$6B4ABCE3")
+         N -  MERGE(@"SEL$6B4ABCE4" >"SEL$6B4ABCE3")
+
+   0 -  SEL$6B4ABCE6
+         N -  MERGE(@"SEL$6B4ABCE6" >"SEL$6B4ABCE5")
+         N -  MERGE(@"SEL$6B4ABCE6" >"SEL$6B4ABCE5")
+
+   0 -  SEL$6B4ABCE8
+         N -  MERGE(@"SEL$6B4ABCE8" >"SEL$6B4ABCE7")
+         N -  MERGE(@"SEL$6B4ABCE8" >"SEL$6B4ABCE7")
+
+   0 -  SEL$6B4ABCED
+         N -  MERGE(@"SEL$6B4ABCED" >"SEL$6B4ABCEC")
+         N -  MERGE(@"SEL$6B4ABCED" >"SEL$6B4ABCEC")
+
+   0 -  SEL$6B4ABCF0
+         N -  MERGE(@"SEL$6B4ABCF0" >"SEL$6B4ABCEF")
+         N -  MERGE(@"SEL$6B4ABCF0" >"SEL$6B4ABCEF")
+
+   0 -  SEL$6B4ABCF3
+         N -  MERGE(@"SEL$6B4ABCF3" >"SEL$6B4ABCF2")
+         N -  MERGE(@"SEL$6B4ABCF3" >"SEL$6B4ABCF2")
+
+   0 -  SEL$6B4ABCF6
+         N -  MERGE(@"SEL$6B4ABCF6" >"SEL$6B4ABCF5")
+         N -  MERGE(@"SEL$6B4ABCF6" >"SEL$6B4ABCF5")
+
+   0 -  SEL$6B4ABCFC
+         N -  MERGE(@"SEL$6B4ABCFC" >"SEL$6B4ABCFB")
+         N -  MERGE(@"SEL$6B4ABCFC" >"SEL$6B4ABCFB")
+
+   0 -  SEL$6B4ABCFF
+         N -  MERGE(@"SEL$6B4ABCFF" >"SEL$6B4ABCFE")
+         N -  MERGE(@"SEL$6B4ABCFF" >"SEL$6B4ABCFE")
+
+   0 -  SEL$6D148BBF
+         N -  FULL(@"SEL$6D148BBF" "X$KZSRO"@"SEL$6B4ABCE1")
+         N -  INDEX(@"SEL$6D148BBF" "OA"@"SEL$6B4ABCDF" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$6D148BBF" "I"@"SEL$6B4ABCDE" ("IND$"."OBJ#"))
+         N -  LEADING(@"SEL$6D148BBF" "I"@"SEL$6B4ABCDE" "OA"@"SEL$6B4ABCDF" "X$KZSRO"@"SEL$6B4ABCE1")
+         N -  USE_NL(@"SEL$6D148BBF" "OA"@"SEL$6B4ABCDF")
+         N -  USE_NL(@"SEL$6D148BBF" "X$KZSRO"@"SEL$6B4ABCE1")
+
+   0 -  SEL$6DF625B8
+         N -  UNNEST(@"SEL$6DF625B8")
+
+   0 -  SEL$71C2E6D3
+         N -  UNNEST(@"SEL$71C2E6D3")
+
+   0 -  SEL$7B798055
+         N -  FULL(@"SEL$7B798055" "E"@"SEL$6B4ABCFF")
+         N -  FULL(@"SEL$7B798055" "S"@"SEL$6B4ABCFF")
+         N -  FULL(@"SEL$7B798055" "W"@"SEL$6B4ABCFF")
+         N -  FULL(@"SEL$7B798055" "connect$_by$_pump$_017"@"SEL$111")
+         N -  LEADING(@"SEL$7B798055" "WB"@"SEL$6B4ABCF7" "S"@"SEL$6B4ABCFF" "W"@"SEL$6B4ABCFF" "E"@"SEL$6B4ABCFF" "O"@"SEL$6B4ABCF7" "connect$_by$_pump$_017"@"SEL$111")
+         N -  USE_HASH(@"SEL$7B798055" "O"@"SEL$6B4ABCF7")
+         N -  USE_HASH(@"SEL$7B798055" "connect$_by$_pump$_017"@"SEL$111")
+         N -  USE_NL(@"SEL$7B798055" "E"@"SEL$6B4ABCFF")
+         N -  USE_NL(@"SEL$7B798055" "S"@"SEL$6B4ABCFF")
+         N -  USE_NL(@"SEL$7B798055" "W"@"SEL$6B4ABCFF")
+
+   0 -  SEL$7F2DA0FD
+         N -  FULL(@"SEL$7F2DA0FD" "X$OCT"@"SEL$6B4ABCFC")
+
+   0 -  SEL$8BABB3BE
+         N -  FULL(@"SEL$8BABB3BE" "X$KZSRO"@"SEL$6B4ABCCA")
+         N -  INDEX(@"SEL$8BABB3BE" "OA"@"SEL$6B4ABCC8" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$8BABB3BE" "OA"@"SEL$6B4ABCC8" "X$KZSRO"@"SEL$6B4ABCCA")
+         N -  USE_NL(@"SEL$8BABB3BE" "X$KZSRO"@"SEL$6B4ABCCA")
+
+   0 -  SEL$8D1DB47A
+         N -  MERGE(@"SEL$8D1DB47A" >"SEL$6B4ABCB7")
+
+   0 -  SEL$8D1DB47B
+         N -  MERGE(@"SEL$8D1DB47B" >"SEL$6B4ABCB7")
+
+   0 -  SEL$904AD17B
+         N -  FULL(@"SEL$904AD17B" "X$KZSRO"@"SEL$6B4ABCCE")
+         N -  INDEX(@"SEL$904AD17B" "OBJAUTH$"@"SEL$6B4ABCCC" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$904AD17B" "TABPART$"@"SEL$6B4ABCCB" ("TABPART$"."OBJ#"))
+         N -  LEADING(@"SEL$904AD17B" "TABPART$"@"SEL$6B4ABCCB" "OBJAUTH$"@"SEL$6B4ABCCC" "X$KZSRO"@"SEL$6B4ABCCE")
+         N -  USE_NL(@"SEL$904AD17B" "OBJAUTH$"@"SEL$6B4ABCCC")
+         N -  USE_NL(@"SEL$904AD17B" "X$KZSRO"@"SEL$6B4ABCCE")
+
+   0 -  SEL$9196FE7C
+         N -  UNNEST(@"SEL$9196FE7C")
+
+   0 -  SEL$9196FE7D
+         N -  UNNEST(@"SEL$9196FE7D")
+
+   0 -  SEL$95780EE2
+         N -  UNNEST(@"SEL$95780EE2")
+
+   0 -  SEL$95780EE3
+         N -  UNNEST(@"SEL$95780EE3")
+
+   0 -  SEL$9BCB5837
+         N -  FULL(@"SEL$9BCB5837" "E"@"SEL$6B4ABCFF")
+         N -  FULL(@"SEL$9BCB5837" "S"@"SEL$6B4ABCFF")
+         N -  FULL(@"SEL$9BCB5837" "W"@"SEL$6B4ABCFF")
+         N -  LEADING(@"SEL$9BCB5837" "WB"@"SEL$6B4ABCF7" "O"@"SEL$6B4ABCF7" "S"@"SEL$6B4ABCFF" "W"@"SEL$6B4ABCFF" "E"@"SEL$6B4ABCFF")
+         N -  USE_HASH(@"SEL$9BCB5837" "O"@"SEL$6B4ABCF7")
+         N -  USE_NL(@"SEL$9BCB5837" "E"@"SEL$6B4ABCFF")
+         N -  USE_NL(@"SEL$9BCB5837" "S"@"SEL$6B4ABCFF")
+         N -  USE_NL(@"SEL$9BCB5837" "W"@"SEL$6B4ABCFF")
+
+   0 -  SEL$9CBB11E7
+         N -  UNNEST(@"SEL$9CBB11E7")
+
+   0 -  SEL$9D1664E7
+         N -  UNNEST(@"SEL$9D1664E7")
+
+   0 -  SEL$9D1664E8
+         N -  UNNEST(@"SEL$9D1664E8")
+
+   0 -  SEL$A1B61E3B
+         N -  FULL(@"SEL$A1B61E3B" "X$KZSRO"@"SEL$6B4ABCF3")
+         N -  INDEX(@"SEL$A1B61E3B" "OBJAUTH$"@"SEL$6B4ABCF1" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$A1B61E3B" "OBJAUTH$"@"SEL$6B4ABCF1" "X$KZSRO"@"SEL$6B4ABCF3")
+         N -  USE_NL(@"SEL$A1B61E3B" "X$KZSRO"@"SEL$6B4ABCF3")
+
+   0 -  SEL$A7440234
+         N -  FULL(@"SEL$A7440234" "X$KZSRO"@"SEL$6B4ABCED")
+         N -  INDEX(@"SEL$A7440234" "OBJAUTH$"@"SEL$6B4ABCEB" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$A7440234" "OBJAUTH$"@"SEL$6B4ABCEB" "X$KZSRO"@"SEL$6B4ABCED")
+         N -  USE_NL(@"SEL$A7440234" "X$KZSRO"@"SEL$6B4ABCED")
+
+   0 -  SEL$A9666A7E
+         N -  MERGE(@"SEL$A9666A7E" >"SEL$6B4ABCF7")
+
+   0 -  SEL$A9F913B7
+         N -  FULL(@"SEL$A9F913B7" "E"@"SEL$108")
+         N -  FULL(@"SEL$A9F913B7" "S"@"SEL$108")
+         N -  FULL(@"SEL$A9F913B7" "W"@"SEL$108")
+         N -  LEADING(@"SEL$A9F913B7" "WB"@"SEL$100" "O"@"SEL$100" "S"@"SEL$108" "W"@"SEL$108" "E"@"SEL$108")
+         N -  USE_HASH(@"SEL$A9F913B7" "O"@"SEL$100")
+         N -  USE_NL(@"SEL$A9F913B7" "E"@"SEL$108")
+         N -  USE_NL(@"SEL$A9F913B7" "S"@"SEL$108")
+         N -  USE_NL(@"SEL$A9F913B7" "W"@"SEL$108")
+
+   0 -  SEL$B8E96BD8
+         N -  MERGE(@"SEL$B8E96BD8" >"SEL$6B4ABCB7")
+
+   0 -  SEL$C492CE4B
+         N -  FULL(@"SEL$C492CE4B" "X$KZSRO"@"SEL$6B4ABCE8")
+         N -  INDEX(@"SEL$C492CE4B" "DEP"@"SEL$6B4ABCE5" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  INDEX(@"SEL$C492CE4B" "O"@"SEL$6B4ABCE6" ("OBJ$"."SPARE3" "OBJ$"."NAME" "OBJ$"."NAMESPACE" "OBJ$"."TYPE#" "OBJ$"."OWNER#" "OBJ$"."REMOTEOWNER" "OBJ$"."LINKNAME" "OBJ$"."SUBNAME" "OBJ$"."
+OBJ#"))
+         N -  INDEX(@"SEL$C492CE4B" "OA"@"SEL$6B4ABCE5" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX(@"SEL$C492CE4B" "U"@"SEL$6B4ABCE6" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$C492CE4B" "O"@"SEL$6B4ABCE6" "X$KZSRO"@"SEL$6B4ABCE8" "U"@"SEL$6B4ABCE6" "OA"@"SEL$6B4ABCE5" "DEP"@"SEL$6B4ABCE5")
+         N -  NLJ_BATCHING(@"SEL$C492CE4B" "DEP"@"SEL$6B4ABCE5")
+         N -  USE_MERGE_CARTESIAN(@"SEL$C492CE4B" "X$KZSRO"@"SEL$6B4ABCE8")
+         N -  USE_NL(@"SEL$C492CE4B" "DEP"@"SEL$6B4ABCE5")
+         N -  USE_NL(@"SEL$C492CE4B" "OA"@"SEL$6B4ABCE5")
+         N -  USE_NL(@"SEL$C492CE4B" "U"@"SEL$6B4ABCE6")
+
+   0 -  SEL$D331869B
+         N -  FULL(@"SEL$D331869B" "X$KZSRO"@"SEL$6B4ABCD6")
+         N -  INDEX(@"SEL$D331869B" "OBJAUTH$"@"SEL$6B4ABCD4" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$D331869B" "CP"@"SEL$6B4ABCD3" ("TABCOMPART$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$D331869B" "SP"@"SEL$6B4ABCD3" ("TABSUBPART$"."OBJ#"))
+         N -  LEADING(@"SEL$D331869B" "SP"@"SEL$6B4ABCD3" "CP"@"SEL$6B4ABCD3" "OBJAUTH$"@"SEL$6B4ABCD4" "X$KZSRO"@"SEL$6B4ABCD6")
+         N -  USE_NL(@"SEL$D331869B" "CP"@"SEL$6B4ABCD3")
+         N -  USE_NL(@"SEL$D331869B" "OBJAUTH$"@"SEL$6B4ABCD4")
+         N -  USE_NL(@"SEL$D331869B" "X$KZSRO"@"SEL$6B4ABCD6")
+
+   0 -  SEL$D33F3851
+         N -  FULL(@"SEL$D33F3851" "L"@"SEL$6B4ABCBA")
+         N -  FULL(@"SEL$D33F3851" "S"@"SEL$6B4ABCBA")
+         N -  FULL(@"SEL$D33F3851" "X"@"SEL$6B4ABCBA")
+         N -  INDEX(@"SEL$D33F3851" "O"@"SEL$6B4ABCBD" ("OBJ$"."OBJ#" "OBJ$"."OWNER#" "OBJ$"."TYPE#"))
+         N -  INDEX(@"SEL$D33F3851" "U"@"SEL$6B4ABCBB" "I_USER#")
+         N -  INDEX(@"SEL$D33F3851" "U"@"SEL$6B4ABCBD" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$D33F3851" "X"@"SEL$6B4ABCBA" "L"@"SEL$6B4ABCBA" "O"@"SEL$6B4ABCBD" "S"@"SEL$6B4ABCBA" "U"@"SEL$6B4ABCBD" "U"@"SEL$6B4ABCBB" "WB"@"SEL$6B4ABCB7")
+         N -  NLJ_BATCHING(@"SEL$D33F3851" "O"@"SEL$6B4ABCBD")
+         N -  ORDER_SUBQ(@"SEL$D33F3851" "SEL$6B4ABCBE" "SEL$6B4ABCBF" "SEL$6B4ABCC0" "SEL$1D215B22" "SEL$20800815" "SEL$6A6501AE" "SEL$16D8329C" "SEL$904AD17B" "SEL$13D809EE" "SEL$154DF20A" "SEL$5C50
+7013" "SEL$49E29BA5" "SEL$D331869B" "SEL$6B4ABCE9" "SEL$0D644DFA" "SEL$6B4ABCEE" "SEL$2EEFBA27" "SEL$6B4ABCC1" "SEL$6B4ABCC2" "SEL$6B4ABCC3" "SEL$6B4ABCC4")
+         N -  PX_JOIN_FILTER(@"SEL$D33F3851" "L"@"SEL$6B4ABCBA")
+         N -  PX_JOIN_FILTER(@"SEL$D33F3851" "S"@"SEL$6B4ABCBA")
+         N -  USE_HASH(@"SEL$D33F3851" "L"@"SEL$6B4ABCBA")
+         N -  USE_HASH(@"SEL$D33F3851" "S"@"SEL$6B4ABCBA")
+         N -  USE_NL(@"SEL$D33F3851" "O"@"SEL$6B4ABCBD")
+         N -  USE_NL(@"SEL$D33F3851" "U"@"SEL$6B4ABCBB")
+         N -  USE_NL(@"SEL$D33F3851" "U"@"SEL$6B4ABCBD")
+         N -  USE_NL(@"SEL$D33F3851" "WB"@"SEL$6B4ABCB7")
+
+   0 -  SEL$DA2FD62F
+         N -  UNNEST(@"SEL$DA2FD62F")
+
+   0 -  SEL$DA2FD630
+         N -  UNNEST(@"SEL$DA2FD630")
+
+   0 -  SEL$DDBB5DFD
+         N -  MERGE(@"SEL$DDBB5DFD" >"SEL$6B4ABCB6")
+
+   0 -  SEL$E33C7CD6
+         N -  UNNEST(@"SEL$E33C7CD6")
+
+   0 -  SEL$E33C7CD7
+         N -  UNNEST(@"SEL$E33C7CD7")
+
+   0 -  SEL$E3B071E6
+         N -  FULL(@"SEL$E3B071E6" "X$KZSRO"@"SEL$6B4ABCDD")
+         N -  INDEX(@"SEL$E3B071E6" "DEP"@"SEL$6B4ABCDA" ("DEPENDENCY$"."D_OBJ#" "DEPENDENCY$"."D_TIMESTAMP" "DEPENDENCY$"."ORDER#"))
+         N -  INDEX(@"SEL$E3B071E6" "O"@"SEL$6B4ABCDB" ("OBJ$"."SPARE3" "OBJ$"."NAME" "OBJ$"."NAMESPACE" "OBJ$"."TYPE#" "OBJ$"."OWNER#" "OBJ$"."REMOTEOWNER" "OBJ$"."LINKNAME" "OBJ$"."SUBNAME" "OBJ$"."
+OBJ#"))
+         N -  INDEX(@"SEL$E3B071E6" "OA"@"SEL$6B4ABCDA" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX(@"SEL$E3B071E6" "U"@"SEL$6B4ABCDB" ("USER$"."USER#" "USER$"."TYPE#" "USER$"."SPARE1" "USER$"."SPARE2"))
+         N -  LEADING(@"SEL$E3B071E6" "O"@"SEL$6B4ABCDB" "X$KZSRO"@"SEL$6B4ABCDD" "U"@"SEL$6B4ABCDB" "OA"@"SEL$6B4ABCDA" "DEP"@"SEL$6B4ABCDA")
+         N -  NLJ_BATCHING(@"SEL$E3B071E6" "DEP"@"SEL$6B4ABCDA")
+         N -  USE_MERGE_CARTESIAN(@"SEL$E3B071E6" "X$KZSRO"@"SEL$6B4ABCDD")
+         N -  USE_NL(@"SEL$E3B071E6" "DEP"@"SEL$6B4ABCDA")
+         N -  USE_NL(@"SEL$E3B071E6" "OA"@"SEL$6B4ABCDA")
+         N -  USE_NL(@"SEL$E3B071E6" "U"@"SEL$6B4ABCDB")
+
+   0 -  SEL$E3CAE492
+         N -  UNNEST(@"SEL$E3CAE492")
+
+   0 -  SEL$E5258143
+         N -  UNNEST(@"SEL$E5258143")
+
+   0 -  SEL$E5258144
+         N -  UNNEST(@"SEL$E5258144")
+
+   0 -  SEL$ECCFE4C4
+         N -  FULL(@"SEL$ECCFE4C4" "X$KZSRO"@"SEL$6B4ABCD2")
+         N -  INDEX(@"SEL$ECCFE4C4" "OBJAUTH$"@"SEL$6B4ABCD0" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$ECCFE4C4" "TABCOMPART$"@"SEL$6B4ABCCF" ("TABCOMPART$"."OBJ#"))
+         N -  LEADING(@"SEL$ECCFE4C4" "TABCOMPART$"@"SEL$6B4ABCCF" "OBJAUTH$"@"SEL$6B4ABCD0" "X$KZSRO"@"SEL$6B4ABCD2")
+         N -  USE_NL(@"SEL$ECCFE4C4" "OBJAUTH$"@"SEL$6B4ABCD0")
+         N -  USE_NL(@"SEL$ECCFE4C4" "X$KZSRO"@"SEL$6B4ABCD2")
+
+   0 -  SEL$F04CDD6E
+         N -  UNNEST(@"SEL$F04CDD6E")
+
+   0 -  SEL$F04CDD6F
+         N -  UNNEST(@"SEL$F04CDD6F")
+
+   0 -  SEL$F4FAE185
+         N -  FULL(@"SEL$F4FAE185" "X$KZSRO"@"SEL$6B4ABCE4")
+         N -  INDEX(@"SEL$F4FAE185" "OA"@"SEL$6B4ABCE2" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  LEADING(@"SEL$F4FAE185" "OA"@"SEL$6B4ABCE2" "X$KZSRO"@"SEL$6B4ABCE4")
+         N -  USE_NL(@"SEL$F4FAE185" "X$KZSRO"@"SEL$6B4ABCE4")
+
+   0 -  SEL$F6166D08
+         N -  FULL(@"SEL$F6166D08" "X$KZSRO"@"SEL$6B4ABCD6")
+         N -  INDEX(@"SEL$F6166D08" "OBJAUTH$"@"SEL$6B4ABCD4" ("OBJAUTH$"."OBJ#" "OBJAUTH$"."GRANTOR#" "OBJAUTH$"."GRANTEE#" "OBJAUTH$"."PRIVILEGE#" "OBJAUTH$"."COL#"))
+         N -  INDEX_RS_ASC(@"SEL$F6166D08" "CP"@"SEL$6B4ABCD3" ("TABCOMPART$"."OBJ#"))
+         N -  INDEX_RS_ASC(@"SEL$F6166D08" "SP"@"SEL$6B4ABCD3" ("TABSUBPART$"."OBJ#"))
+         N -  LEADING(@"SEL$F6166D08" "SP"@"SEL$6B4ABCD3" "CP"@"SEL$6B4ABCD3" "OBJAUTH$"@"SEL$6B4ABCD4" "X$KZSRO"@"SEL$6B4ABCD6")
+         N -  USE_NL(@"SEL$F6166D08" "CP"@"SEL$6B4ABCD3")
+         N -  USE_NL(@"SEL$F6166D08" "OBJAUTH$"@"SEL$6B4ABCD4")
+         N -  USE_NL(@"SEL$F6166D08" "X$KZSRO"@"SEL$6B4ABCD6")
+
+  40 -  SEL$17F35C7F
+         U -  MERGE(@"SEL$17F35C7F" >"SEL$112")
+
+  51 -  SEL$47852CAC
+         U -  ORDER_SUBQ(@"SEL$47852CAC" "SEL$43" "SEL$44" "SEL$45" "SEL$05764D7B" "SEL$33D6DC43" "SEL$7A521E49" "SEL$7152BB45" "SEL$2103B7C8" "SEL$52004126" "SEL$109D47E3" "SEL$0DD1BA57" "SEL$245CC9F
+3" "SEL$ACD1151C" "SEL$86" "SEL$C4E2654A" "SEL$91" "SEL$CC1CEC23" "SEL$46" "SEL$47" "SEL$48" "SEL$49")
+
+  61 -  SEL$47852CAC / L@SEL$39
+         U -  PX_JOIN_FILTER(@"SEL$47852CAC" "L"@"SEL$39")
+
+  64 -  SEL$47852CAC / S@SEL$39
+         U -  PX_JOIN_FILTER(@"SEL$47852CAC" "S"@"SEL$39")
+
+3- Using SQL Profile
+--------------------
+Plan hash value: 1100999698
+
+-------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                         | Name                      | Rows  | Bytes | Cost (%CPU)| Time     |
+-------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                                  |                           |     6 |  1500 |    33  (19)| 00:00:01 |
+|   1 |  TEMP TABLE TRANSFORMATION                        |                           |       |       |            |          |
+|   2 |   LOAD AS SELECT (CURSOR DURATION MEMORY)         | SYS_TEMP_0FD9D6637_B40D2E |       |       |            |          |
+|*  3 |    HASH JOIN                                      |                           |    38 |  3990 |     1 (100)| 00:00:01 |
+|*  4 |     HASH JOIN                                     |                           |    38 |  3382 |     1 (100)| 00:00:01 |
+|   5 |      VIEW                                         | GV$_LOCK                  |    47 |  3008 |     1 (100)| 00:00:01 |
+|   6 |       UNION-ALL                                   |                           |       |       |            |          |
+|*  7 |        FILTER                                     |                           |       |       |            |          |
+|   8 |         VIEW                                      | GV$_LOCK1                 |    39 |  3003 |     1 (100)| 00:00:01 |
+|   9 |          UNION-ALL                                |                           |       |       |            |          |
+|* 10 |           FIXED TABLE FULL                        | X$KDNSSF                  |     1 |    25 |     0   (0)| 00:00:01 |
+|* 11 |           FIXED TABLE FULL                        | X$KSQEQ                   |    38 |  1026 |     1 (100)| 00:00:01 |
+|* 12 |        FIXED TABLE FULL                           | X$KTADM                   |     1 |    22 |     0   (0)| 00:00:01 |
+|* 13 |        FIXED TABLE FULL                           | X$KTATRFIL                |     1 |    22 |     0   (0)| 00:00:01 |
+|* 14 |        FIXED TABLE FULL                           | X$KTATRFSL                |     1 |    22 |     0   (0)| 00:00:01 |
+|* 15 |        FIXED TABLE FULL                           | X$KTATL                   |     1 |    35 |     0   (0)| 00:00:01 |
+|* 16 |        FIXED TABLE FULL                           | X$KTSTUSC                 |     1 |    30 |     0   (0)| 00:00:01 |
+|* 17 |        FIXED TABLE FULL                           | X$KTSTUSS                 |     1 |    29 |     0   (0)| 00:00:01 |
+|* 18 |        FIXED TABLE FULL                           | X$KTSTUSG                 |     1 |    22 |     0   (0)| 00:00:01 |
+|* 19 |        FIXED TABLE FULL                           | X$KTCXB                   |     1 |    33 |     0   (0)| 00:00:01 |
+|* 20 |      FIXED TABLE FULL                             | X$KSQRS                   |  2274 | 56850 |     0   (0)| 00:00:01 |
+|* 21 |     FIXED TABLE FULL                              | X$KSUSE                   |   454 |  7264 |     0   (0)| 00:00:01 |
+|  22 |   LOAD AS SELECT (CURSOR DURATION MEMORY)         | SYS_TEMP_0FD9D6638_B40D2E |       |       |            |          |
+|* 23 |    HASH JOIN                                      |                           |     1 |   210 |    12   (0)| 00:00:01 |
+|* 24 |     VIEW                                          |                           |  1069 |    98K|     6   (0)| 00:00:01 |
+|  25 |      TABLE ACCESS FULL                            | SYS_TEMP_0FD9D6637_B40D2E |  1069 |   109K|     6   (0)| 00:00:01 |
+|* 26 |     VIEW                                          |                           |  1069 |   121K|     6   (0)| 00:00:01 |
+|  27 |      TABLE ACCESS FULL                            | SYS_TEMP_0FD9D6637_B40D2E |  1069 |   109K|     6   (0)| 00:00:01 |
+|  28 |   LOAD AS SELECT (CURSOR DURATION MEMORY)         | SYS_TEMP_0FD9D6639_B40D2E |       |       |            |          |
+|  29 |    UNION-ALL                                      |                           |       |       |            |          |
+|  30 |     VIEW                                          |                           |     1 |   129 |     2   (0)| 00:00:01 |
+|  31 |      TABLE ACCESS FULL                            | SYS_TEMP_0FD9D6638_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|  32 |     VIEW                                          |                           |     1 |    29 |     6  (34)| 00:00:01 |
+|  33 |      MINUS                                        |                           |       |       |            |          |
+|  34 |       SORT UNIQUE                                 |                           |     1 |    13 |            |          |
+|  35 |        VIEW                                       |                           |     1 |    13 |     2   (0)| 00:00:01 |
+|  36 |         TABLE ACCESS FULL                         | SYS_TEMP_0FD9D6638_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|  37 |       SORT UNIQUE                                 |                           |     1 |    13 |            |          |
+|  38 |        VIEW                                       |                           |     1 |    13 |     2   (0)| 00:00:01 |
+|  39 |         TABLE ACCESS FULL                         | SYS_TEMP_0FD9D6638_B40D2E |     1 |    74 |     2   (0)| 00:00:01 |
+|* 40 |   CONNECT BY NO FILTERING WITH START-WITH         |                           |       |       |            |          |
+|  41 |    TABLE ACCESS BY INDEX ROWID                    | SUM$                      |     1 |     8 |     1   (0)| 00:00:01 |
+|* 42 |     INDEX UNIQUE SCAN                             | I_SUM$_1                  |     1 |       |     0   (0)| 00:00:01 |
+|  43 |    VIEW                                           |                           |     2 |   500 |    10  (10)| 00:00:01 |
+|  44 |     NESTED LOOPS                                  |                           |     2 |   460 |    10  (10)| 00:00:01 |
+|  45 |      NESTED LOOPS                                 |                           |     2 |   452 |    10  (10)| 00:00:01 |
+|  46 |       NESTED LOOPS                                |                           |     2 |   436 |    10  (10)| 00:00:01 |
+|* 47 |        HASH JOIN OUTER                            |                           |     2 |   394 |    10  (10)| 00:00:01 |
+|  48 |         VIEW                                      |                           |     2 |    52 |     2   (0)| 00:00:01 |
+|  49 |          TABLE ACCESS FULL                        | SYS_TEMP_0FD9D6639_B40D2E |     2 |   158 |     2   (0)| 00:00:01 |
+|  50 |         VIEW                                      |                           |     1 |   171 |     8  (13)| 00:00:01 |
+|  51 |          SORT GROUP BY                            |                           |     1 |   221 |     8  (13)| 00:00:01 |
+|* 52 |           FILTER                                  |                           |       |       |            |          |
+|  53 |            NESTED LOOPS                           |                           |     1 |   221 |     6   (0)| 00:00:01 |
+|  54 |             NESTED LOOPS                          |                           |     1 |   195 |     4   (0)| 00:00:01 |
+|  55 |              NESTED LOOPS                         |                           |     1 |   178 |     3   (0)| 00:00:01 |
+|  56 |               NESTED LOOPS                        |                           |     1 |   153 |     2   (0)| 00:00:01 |
+|* 57 |                HASH JOIN                          |                           |     1 |    42 |     0   (0)| 00:00:01 |
+|* 58 |                 HASH JOIN                         |                           |     1 |    37 |     0   (0)| 00:00:01 |
+|* 59 |                  FIXED TABLE FULL                 | X$KTCXB                   |     2 |    48 |     0   (0)| 00:00:01 |
+|  60 |                  FIXED TABLE FULL                 | X$KSUSE                   |   454 |  5902 |     0   (0)| 00:00:01 |
+|  61 |                 FIXED TABLE FULL                  | X$KTADM                   |  2051 | 10255 |     0   (0)| 00:00:01 |
+|* 62 |                TABLE ACCESS BY INDEX ROWID BATCHED| OBJ$                      |     1 |   111 |     2   (0)| 00:00:01 |
+|* 63 |                 INDEX RANGE SCAN                  | I_OBJ1                    |     1 |       |     1   (0)| 00:00:01 |
+|* 64 |               INDEX RANGE SCAN                    | I_USER2                   |     1 |    25 |     1   (0)| 00:00:01 |
+|  65 |              TABLE ACCESS CLUSTER                 | USER$                     |     1 |    17 |     1   (0)| 00:00:01 |
+|* 66 |               INDEX UNIQUE SCAN                   | I_USER#                   |     1 |       |     0   (0)| 00:00:01 |
+|* 67 |             VIEW                                  |                           |     1 |    26 |     2   (0)| 00:00:01 |
+|  68 |              TABLE ACCESS FULL                    | SYS_TEMP_0FD9D6639_B40D2E |     2 |   158 |     2   (0)| 00:00:01 |
+|  69 |            NESTED LOOPS                           |                           |     1 |    32 |     4   (0)| 00:00:01 |
+|  70 |             NESTED LOOPS                          |                           |     1 |    23 |     3   (0)| 00:00:01 |
+|  71 |              TABLE ACCESS BY INDEX ROWID          | IND$                      |     1 |    10 |     2   (0)| 00:00:01 |
+|* 72 |               INDEX UNIQUE SCAN                   | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|* 73 |              TABLE ACCESS CLUSTER                 | TAB$                      |     1 |    13 |     1   (0)| 00:00:01 |
+|* 74 |             INDEX RANGE SCAN                      | I_OBJ1                    |     1 |     9 |     1   (0)| 00:00:01 |
+|* 75 |            TABLE ACCESS CLUSTER                   | TAB$                      |     1 |    13 |     2   (0)| 00:00:01 |
+|* 76 |             INDEX UNIQUE SCAN                     | I_OBJ#                    |     1 |       |     1   (0)| 00:00:01 |
+|* 77 |            TABLE ACCESS BY INDEX ROWID            | SEQ$                      |     1 |     8 |     1   (0)| 00:00:01 |
+|* 78 |             INDEX UNIQUE SCAN                     | I_SEQ1                    |     1 |       |     0   (0)| 00:00:01 |
+|* 79 |            TABLE ACCESS BY INDEX ROWID            | IND$                      |     1 |     8 |     2   (0)| 00:00:01 |
+|* 80 |             INDEX UNIQUE SCAN                     | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|  81 |            NESTED LOOPS                           |                           |    14 |   252 |     2   (0)| 00:00:01 |
+|* 82 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|* 83 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|  84 |            NESTED LOOPS                           |                           |     1 |    25 |     3   (0)| 00:00:01 |
+|  85 |             NESTED LOOPS                          |                           |     1 |    19 |     3   (0)| 00:00:01 |
+|  86 |              TABLE ACCESS BY INDEX ROWID          | IND$                      |     1 |    10 |     2   (0)| 00:00:01 |
+|* 87 |               INDEX UNIQUE SCAN                   | I_IND1                    |     1 |       |     1   (0)| 00:00:01 |
+|* 88 |              INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |     9 |     1   (0)| 00:00:01 |
+|* 89 |             FIXED TABLE FULL                      | X$KZSRO                   |     1 |     6 |     0   (0)| 00:00:01 |
+|  90 |            NESTED LOOPS                           |                           |    11 |   198 |     2   (0)| 00:00:01 |
+|* 91 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|* 92 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|  93 |            NESTED LOOPS                           |                           |    11 |   198 |     2   (0)| 00:00:01 |
+|* 94 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|* 95 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|  96 |            NESTED LOOPS                           |                           |     1 |    28 |     2   (0)| 00:00:01 |
+|  97 |             NESTED LOOPS                          |                           |     1 |    22 |     2   (0)| 00:00:01 |
+|  98 |              TABLE ACCESS BY INDEX ROWID          | TABPART$                  |     1 |    10 |     1   (0)| 00:00:01 |
+|* 99 |               INDEX UNIQUE SCAN                   | I_TABPART_OBJ$            |     1 |       |     0   (0)| 00:00:01 |
+|*100 |              INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*101 |             FIXED TABLE FULL                      | X$KZSRO                   |     1 |     6 |     0   (0)| 00:00:01 |
+| 102 |            NESTED LOOPS                           |                           |    13 |   364 |     2   (0)| 00:00:01 |
+| 103 |             NESTED LOOPS                          |                           |     1 |    22 |     2   (0)| 00:00:01 |
+| 104 |              TABLE ACCESS BY INDEX ROWID          | TABCOMPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|*105 |               INDEX UNIQUE SCAN                   | I_TABCOMPART$             |     1 |       |     0   (0)| 00:00:01 |
+|*106 |              INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*107 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 108 |            NESTED LOOPS                           |                           |     1 |    82 |     8   (0)| 00:00:01 |
+| 109 |             NESTED LOOPS                          |                           |     5 |    82 |     8   (0)| 00:00:01 |
+| 110 |              NESTED LOOPS                         |                           |     1 |    72 |     5   (0)| 00:00:01 |
+| 111 |               NESTED LOOPS                        |                           |     1 |    68 |     4   (0)| 00:00:01 |
+| 112 |                MERGE JOIN CARTESIAN               |                           |     1 |    56 |     3   (0)| 00:00:01 |
+|*113 |                 INDEX RANGE SCAN                  | I_OBJ5                    |     1 |    50 |     3   (0)| 00:00:01 |
+| 114 |                 BUFFER SORT                       |                           |    26 |   156 |     0   (0)| 00:00:01 |
+|*115 |                  FIXED TABLE FULL                 | X$KZSRO                   |    26 |   156 |     0   (0)| 00:00:01 |
+|*116 |                INDEX RANGE SCAN                   | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*117 |               INDEX RANGE SCAN                    | I_USER2                   |     1 |     4 |     1   (0)| 00:00:01 |
+|*118 |              INDEX RANGE SCAN                     | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*119 |             TABLE ACCESS BY INDEX ROWID           | DEPENDENCY$               |     1 |    10 |     3   (0)| 00:00:01 |
+| 120 |            NESTED LOOPS                           |                           |     1 |    82 |     8   (0)| 00:00:01 |
+| 121 |             NESTED LOOPS                          |                           |     5 |    82 |     8   (0)| 00:00:01 |
+| 122 |              NESTED LOOPS                         |                           |     1 |    72 |     5   (0)| 00:00:01 |
+| 123 |               NESTED LOOPS                        |                           |     1 |    68 |     4   (0)| 00:00:01 |
+| 124 |                MERGE JOIN CARTESIAN               |                           |     1 |    56 |     3   (0)| 00:00:01 |
+|*125 |                 INDEX RANGE SCAN                  | I_OBJ5                    |     1 |    50 |     3   (0)| 00:00:01 |
+| 126 |                 BUFFER SORT                       |                           |    26 |   156 |     0   (0)| 00:00:01 |
+|*127 |                  FIXED TABLE FULL                 | X$KZSRO                   |    26 |   156 |     0   (0)| 00:00:01 |
+|*128 |                INDEX RANGE SCAN                   | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*129 |               INDEX RANGE SCAN                    | I_USER2                   |     1 |     4 |     1   (0)| 00:00:01 |
+|*130 |              INDEX RANGE SCAN                     | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*131 |             TABLE ACCESS BY INDEX ROWID           | DEPENDENCY$               |     1 |    10 |     3   (0)| 00:00:01 |
+| 132 |            NESTED LOOPS                           |                           |     6 |   192 |     2   (0)| 00:00:01 |
+| 133 |             NESTED LOOPS                          |                           |     1 |    26 |     2   (0)| 00:00:01 |
+|*134 |              TABLE ACCESS BY INDEX ROWID          | TRIGGER$                  |     1 |    14 |     1   (0)| 00:00:01 |
+|*135 |               INDEX UNIQUE SCAN                   | I_TRIGGER2                |     1 |       |     0   (0)| 00:00:01 |
+|*136 |              INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*137 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 138 |            NESTED LOOPS                           |                           |    13 |   494 |     3   (0)| 00:00:01 |
+| 139 |             NESTED LOOPS                          |                           |     1 |    32 |     3   (0)| 00:00:01 |
+| 140 |              NESTED LOOPS                         |                           |     1 |    20 |     2   (0)| 00:00:01 |
+| 141 |               TABLE ACCESS BY INDEX ROWID         | TABSUBPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|*142 |                INDEX UNIQUE SCAN                  | I_TABSUBPART$_OBJ$        |     1 |       |     0   (0)| 00:00:01 |
+| 143 |               TABLE ACCESS BY INDEX ROWID         | TABCOMPART$               |     1 |    10 |     1   (0)| 00:00:01 |
+|*144 |                INDEX UNIQUE SCAN                  | I_TABCOMPART$             |     1 |       |     0   (0)| 00:00:01 |
+|*145 |              INDEX RANGE SCAN                     | I_OBJAUTH1                |     1 |    12 |     1   (0)| 00:00:01 |
+|*146 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 147 |            FAST DUAL                              |                           |     1 |       |     2   (0)| 00:00:01 |
+| 148 |            NESTED LOOPS                           |                           |     1 |    18 |     2   (0)| 00:00:01 |
+|*149 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |    12 |     2   (0)| 00:00:01 |
+|*150 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 151 |            NESTED LOOPS                           |                           |    14 |   210 |     2   (0)| 00:00:01 |
+|*152 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |     9 |     2   (0)| 00:00:01 |
+|*153 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+| 154 |            VIEW                                   |                           |     1 |    16 |    10   (0)| 00:00:01 |
+| 155 |             SORT GROUP BY                         |                           |     1 |    35 |    10   (0)| 00:00:01 |
+| 156 |              NESTED LOOPS                         |                           |     1 |    35 |     8   (0)| 00:00:01 |
+| 157 |               NESTED LOOPS                        |                           |     5 |   115 |     3   (0)| 00:00:01 |
+|*158 |                INDEX UNIQUE SCAN                  | I_OLAP_CUBES$             |     1 |    13 |     0   (0)| 00:00:01 |
+| 159 |                TABLE ACCESS BY INDEX ROWID BATCHED| DEPENDENCY$               |     5 |    50 |     3   (0)| 00:00:01 |
+|*160 |                 INDEX RANGE SCAN                  | I_DEPENDENCY1             |     5 |       |     2   (0)| 00:00:01 |
+|*161 |               INDEX RANGE SCAN                    | I_OBJ1                    |     1 |    12 |     1   (0)| 00:00:01 |
+| 162 |            NESTED LOOPS                           |                           |    14 |   210 |     2   (0)| 00:00:01 |
+|*163 |             INDEX RANGE SCAN                      | I_OBJAUTH1                |     1 |     9 |     2   (0)| 00:00:01 |
+|*164 |             FIXED TABLE FULL                      | X$KZSRO                   |    13 |    78 |     0   (0)| 00:00:01 |
+|*165 |            TABLE ACCESS BY INDEX ROWID BATCHED    | USER_EDITIONING$          |     1 |     6 |     2   (0)| 00:00:01 |
+|*166 |             INDEX RANGE SCAN                      | I_USER_EDITIONING         |     2 |       |     1   (0)| 00:00:01 |
+|*167 |            TABLE ACCESS BY INDEX ROWID BATCHED    | USER_EDITIONING$          |     1 |     6 |     2   (0)| 00:00:01 |
+|*168 |             INDEX RANGE SCAN                      | I_USER_EDITIONING         |     2 |       |     1   (0)| 00:00:01 |
+| 169 |            NESTED LOOPS                           |                           |     1 |    29 |     2   (0)| 00:00:01 |
+|*170 |             INDEX SKIP SCAN                       | I_USER2                   |     1 |    20 |     1   (0)| 00:00:01 |
+|*171 |             INDEX RANGE SCAN                      | I_OBJ4                    |     1 |     9 |     1   (0)| 00:00:01 |
+|*172 |        FIXED TABLE FIXED INDEX                    | X$KSUSE (ind:1)           |     1 |    21 |     0   (0)| 00:00:01 |
+|*173 |       FIXED TABLE FIXED INDEX                     | X$KSLWT (ind:1)           |     1 |     8 |     0   (0)| 00:00:01 |
+|*174 |      FIXED TABLE FIXED INDEX                      | X$KSLED (ind:2)           |     1 |     4 |     0   (0)| 00:00:01 |
+-------------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - access("SADDR"="S"."ADDR")
+   4 - access(TO_CHAR(USERENV('INSTANCE'))||RAWTOHEX("RADDR")=TO_CHAR("R"."INST_ID")||RAWTOHEX("R"."ADDR"))
+   7 - filter(USERENV('INSTANCE') IS NOT NULL)
+  10 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  11 - filter(BITAND("KSSPAFLG",1)<>0 AND ("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  12 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  13 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  14 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  15 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  16 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  17 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  18 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSOBFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  19 - filter(("KSQLKMOD"<>0 OR "KSQLKREQ"<>0) AND BITAND("KSSPAFLG",1)<>0 AND ("CON_ID"=0 OR "CON_ID"=3) AND
+              "INST_ID"=USERENV('INSTANCE'))
+  20 - filter("R"."CON_ID"=0 OR "R"."CON_ID"=3)
+  21 - filter("S"."INST_ID"=USERENV('INSTANCE'))
+  23 - access("W"."LOCK_TYPE"="H"."LOCK_TYPE" AND "W"."LOCK_ID1"="H"."LOCK_ID1" AND "W"."LOCK_ID2"="H"."LOCK_ID2")
+       filter("W"."SESSION_ID"=:SID OR "H"."SESSION_ID"=:SID)
+  24 - filter("W"."MODE_REQUESTED"<>'None')
+  26 - filter("H"."BLOCKING_OTHERS"='Blocking' AND "H"."MODE_HELD"<>'None' AND "H"."MODE_HELD"<>'Null')
+  40 - access("HOLDING_SESSION"=PRIOR NULL)
+       filter("HOLDING_SESSION" IS NULL)
+  42 - access("S"."OBJ#"=:B1)
+  47 - access("O"."SESSION_ID"(+)="WB"."WAITING_SESSION")
+  52 - filter(("O"."TYPE#"<>1 AND "O"."TYPE#"<>2 AND "O"."TYPE#"<>6 OR "O"."TYPE#"=1 AND  NOT EXISTS (SELECT /*+
+              OPT_ESTIMATE (@"SEL$6B4ABCC2" TABLE "T"@"SEL$6B4ABCC2" SCALE_ROWS=0.100224 ) */ 0 FROM "SYS"."OBJ$" "IO","SYS"."TAB$"
+              "T","SYS"."IND$" "I" WHERE "I"."OBJ#"=:B1 AND "I"."BO#"="T"."OBJ#" AND
+              BITAND("T"."PROPERTY",36893488147419103232)=36893488147419103232 AND "IO"."OBJ#"="I"."BO#" AND "IO"."TYPE#"=2) OR
+              "O"."TYPE#"=2 AND  (SELECT 1 FROM "SYS"."TAB$" "T" WHERE "T"."OBJ#"=:B2 AND
+              BITAND("T"."PROPERTY",36893488147419103232)=0)=1 OR "O"."TYPE#"=6 AND  (SELECT 1 FROM "SYS"."SEQ$" "S" WHERE
+              "S"."OBJ#"=:B3 AND (BITAND("S"."FLAGS",1024)=0 OR "S"."FLAGS" IS NULL))=1) AND ("O"."TYPE#"<>1 AND "O"."TYPE#"<>10 OR
+              "O"."TYPE#"=1 AND  (SELECT 1 FROM "SYS"."IND$" "I" WHERE "I"."OBJ#"=:B4 AND ("I"."TYPE#"=1 OR "I"."TYPE#"=2 OR
+              "I"."TYPE#"=3 OR "I"."TYPE#"=4 OR "I"."TYPE#"=6 OR "I"."TYPE#"=7 OR "I"."TYPE#"=9))=1) AND
+              ("O"."SPARE3"=USERENV('SCHEMAID') OR "O"."SPARE3"=1 OR ("O"."TYPE#"=1 OR "O"."TYPE#"=2 OR "O"."TYPE#"=3 OR
+              "O"."TYPE#"=4 OR "O"."TYPE#"=5 OR "O"."TYPE#"=6 OR "O"."TYPE#"=19 OR "O"."TYPE#"=20 OR "O"."TYPE#"=22 OR
+              "O"."TYPE#"=23 OR "O"."TYPE#"=32 OR "O"."TYPE#"=33 OR "O"."TYPE#"=34 OR "O"."TYPE#"=35 OR "O"."TYPE#"=42 OR
+              "O"."TYPE#"=44 OR "O"."TYPE#"=46 OR "O"."TYPE#"=48 OR "O"."TYPE#"=59 OR "O"."TYPE#"=62 OR "O"."TYPE#"=66 OR
+              "O"."TYPE#"=67 OR "O"."TYPE#"=68 OR "O"."TYPE#"=79 OR "O"."TYPE#"=81 OR "O"."TYPE#"=82 OR "O"."TYPE#"=87 OR
+              "O"."TYPE#"=92 OR "O"."TYPE#"=94 OR "O"."TYPE#"=95 OR "O"."TYPE#"=100) AND
+              ORA_CHECK_SYS_PRIVILEGE("O"."SPARE3","O"."TYPE#")=1 OR "O"."TYPE#"=57 OR "O"."TYPE#"=69 OR "O"."TYPE#"=72 OR
+              "O"."TYPE#"=74 OR "O"."TYPE#"=101 OR ("O"."TYPE#"=150 OR "O"."TYPE#"=151 OR "O"."TYPE#"=152) AND
+              ORA_CHECK_SYS_PRIVILEGE("O"."SPARE3","O"."TYPE#")=1 OR "O"."TYPE#"<>29 AND "O"."TYPE#"<>13 AND "O"."TYPE#"<>30 AND
+              "O"."TYPE#"<>56 AND "O"."TYPE#"<>9 AND "O"."TYPE#"<>11 AND "O"."TYPE#"<>8 AND "O"."TYPE#"<>14 AND "O"."TYPE#"<>7 AND
+              "O"."TYPE#"<>12 AND "O"."TYPE#"<>28 AND "O"."TYPE#"<>93 AND  EXISTS (SELECT /*+ OPT_ESTIMATE (@"SEL$4D21897C"
+              NLJ_INDEX_FILTER "OBJAUTH$"@"SEL$6B4ABCC5" ("X$KZSRO"@"SEL$6B4ABCC7") "I_OBJAUTH1" SCALE_ROWS=151763.849200 )
+              OPT_ESTIMATE (@"SEL$4D21897C" TABLE "X$KZSRO"@"SEL$6B4ABCC7" SCALE_ROWS=13.000000 ) */ 0 FROM "SYS"."OBJAUTH$"
+              "OBJAUTH$","SYS"."X$KZSRO" "X$KZSRO" WHERE "GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3) AND "OBJ#"=:B5 AND
+              ("PRIVILEGE#"=3 OR "PRIVILEGE#"=6 OR "PRIVILEGE#"=7 OR "PRIVILEGE#"=9 OR "PRIVILEGE#"=10 OR "PRIVILEGE#"=11 OR
+              "PRIVILEGE#"=12 OR "PRIVILEGE#"=16 OR "PRIVILEGE#"=17 OR "PRIVILEGE#"=18)) OR "O"."TYPE#"=1 AND  EXISTS (SELECT /*+
+              OPT_ESTIMATE (@"SEL$6D148BBF" TABLE "X$KZSRO"@"SEL$6B4ABCE1" SCALE_ROWS=13.000000 ) */ 0 FROM "SYS"."IND$"
+              "I","SYS"."OBJAUTH$" "OA","SYS"."X$KZSRO" "X$KZSRO" WHERE "OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3)
+              AND "OA"."OBJ#"="I"."BO#" AND "I"."OBJ#"=:B6) OR ("O"."TYPE#"=7 OR "O"."TYPE#"=8 OR "O"."TYPE#"=9 OR "O"."TYPE#"=28 OR
+              "O"."TYPE#"=29 OR "O"."TYPE#"=30 OR "O"."TYPE#"=56) AND (ORA_CHECK_SYS_PRIVILEGE("O"."SPARE3","O"."TYPE#")=1 OR
+              EXISTS (SELECT /*+ OPT_ESTIMATE (@"SEL$8BABB3BE" NLJ_INDEX_FILTER "OA"@"SEL$6B4ABCC8" ("X$KZSRO"@"SEL$6B4ABCCA")
+              "I_OBJAUTH1" SCALE_ROWS=158336.927500 ) OPT_ESTIMATE (@"SEL$8BABB3BE" TABLE "X$KZSRO"@"SEL$6B4ABCCA"
+              SCALE_ROWS=13.000000 ) */ 0 FROM "SYS"."OBJAUTH$" "OA","SYS"."X$KZSRO" "X$KZSRO" WHERE "OA"."GRANTEE#"="KZSROROL" AND
+              ("CON_ID"=0 OR "CON_ID"=3) AND "OA"."OBJ#"=:B7 AND ("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26))) OR "O"."TYPE#"=13
+              AND (ORA_CHECK_SYS_PRIVILEGE("O"."SPARE3","O"."TYPE#")=1 OR  EXISTS (SELECT /*+ OPT_ESTIMATE (@"SEL$F4FAE185"
+              NLJ_INDEX_FILTER "OA"@"SEL$6B4ABCE2" ("X$KZSRO"@"SEL$6B4ABCE4") "I_OBJAUTH1" SCALE_ROWS=158336.927500 ) OPT_ESTIMATE
+              (@"SEL$F4FAE185" TABLE "X$KZSRO"@"SEL$6B4ABCE4" SCALE_ROWS=13.000000 ) */ 0 FROM "SYS"."OBJAUTH$" "OA","SYS"."X$KZSRO"
+              "X$KZSRO" WHERE "OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3) AND "OA"."OBJ#"=:B8 AND
+              ("OA"."PRIVILEGE#"=12)
+  57 - access("X"."KTCXBXBA"="L"."KSSOBOWN")
+  58 - access("X"."KTCXBSES"="S"."ADDR")
+  59 - filter("X"."INST_ID"=:INST_ID AND ("X"."CON_ID"=0 OR "X"."CON_ID"=3))
+  62 - filter(BITAND("O"."FLAGS",128)=0 AND "O"."NAME"<>'_NEXT_OBJECT' AND "O"."NAME"<>'_default_auditing_options_'
+              AND "O"."LINKNAME" IS NULL)
+  63 - access("L"."KTADMTAB"="O"."OBJ#")
+  64 - access("O"."OWNER#"="U"."USER#")
+  66 - access("O"."SPARE3"="U"."USER#")
+  67 - filter("WB"."WAITING_SESSION"="S"."INDX" OR "WB"."HOLDING_SESSION"="S"."INDX")
+  72 - access("I"."OBJ#"=:B1)
+  73 - filter("I"."BO#"="T"."OBJ#" AND BITAND("T"."PROPERTY",36893488147419103232)=36893488147419103232)
+  74 - access("IO"."OBJ#"="I"."BO#" AND "IO"."TYPE#"=2)
+       filter("IO"."TYPE#"=2)
+  75 - filter(BITAND("T"."PROPERTY",36893488147419103232)=0)
+  76 - access("T"."OBJ#"=:B1)
+  77 - filter(BITAND("S"."FLAGS",1024)=0 OR "S"."FLAGS" IS NULL)
+  78 - access("S"."OBJ#"=:B1)
+  79 - filter("I"."TYPE#"=1 OR "I"."TYPE#"=2 OR "I"."TYPE#"=3 OR "I"."TYPE#"=4 OR "I"."TYPE#"=6 OR "I"."TYPE#"=7 OR
+              "I"."TYPE#"=9)
+  80 - access("I"."OBJ#"=:B1)
+  82 - access("OBJ#"=:B1)
+       filter("PRIVILEGE#"=3 OR "PRIVILEGE#"=6 OR "PRIVILEGE#"=7 OR "PRIVILEGE#"=9 OR "PRIVILEGE#"=10 OR
+              "PRIVILEGE#"=11 OR "PRIVILEGE#"=12 OR "PRIVILEGE#"=16 OR "PRIVILEGE#"=17 OR "PRIVILEGE#"=18)
+  83 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  87 - access("I"."OBJ#"=:B1)
+  88 - access("OA"."OBJ#"="I"."BO#")
+  89 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  91 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26)
+  92 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  94 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=12 OR "OA"."PRIVILEGE#"=26)
+  95 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+  99 - access("OBJ#"=:B1)
+ 100 - access("BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+ 101 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 105 - access("OBJ#"=:B1)
+ 106 - access("BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+ 107 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 113 - access("O"."SPARE3"=:B1 AND "O"."NAME"=:B2 AND "O"."TYPE#"=9)
+       filter("O"."TYPE#"=9)
+ 115 - filter("CON_ID"=0 OR "CON_ID"=3)
+ 116 - access("OA"."OBJ#"="O"."OBJ#" AND "OA"."GRANTEE#"="KZSROROL" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26 AND "OA"."GRANTEE#"="KZSROROL")
+ 117 - access("O"."OWNER#"="U"."USER#")
+ 118 - access("DEP"."D_OBJ#"=:B1)
+ 119 - filter("DEP"."P_OBJ#"="O"."OBJ#")
+ 125 - access("O"."SPARE3"=:B1 AND "O"."NAME"=:B2 AND "O"."TYPE#"=13)
+       filter("O"."TYPE#"=13)
+ 127 - filter("CON_ID"=0 OR "CON_ID"=3)
+ 128 - access("OA"."OBJ#"="O"."OBJ#" AND "OA"."GRANTEE#"="KZSROROL" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26 AND "OA"."GRANTEE#"="KZSROROL")
+ 129 - access("O"."OWNER#"="U"."USER#")
+ 130 - access("DEP"."D_OBJ#"=:B1)
+ 131 - filter("DEP"."P_OBJ#"="O"."OBJ#")
+ 134 - filter(BITAND("T"."PROPERTY",24)=0)
+ 135 - access("T"."OBJ#"=:B1)
+ 136 - access("OA"."OBJ#"="T"."BASEOBJECT" AND "OA"."PRIVILEGE#"=26)
+       filter("OA"."PRIVILEGE#"=26)
+ 137 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 142 - access("SP"."OBJ#"=:B1)
+ 144 - access("SP"."POBJ#"="CP"."OBJ#")
+ 145 - access("CP"."BO#"="OBJ#")
+       filter("PRIVILEGE#"=9 OR "PRIVILEGE#"=17)
+ 146 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 149 - access("OA"."OBJ#"=:B1)
+       filter("OA"."PRIVILEGE#"=0 OR "OA"."PRIVILEGE#"=29)
+ 150 - filter("OA"."GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 152 - access("OBJ#"=:B1)
+ 153 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 158 - access("C"."OBJ#"=:B1)
+ 160 - access("D"."D_OBJ#"=:B1)
+ 161 - access("DO"."OBJ#"="D"."P_OBJ#" AND "DO"."TYPE#"=92)
+       filter("DO"."TYPE#"=92)
+ 163 - access("OBJ#"=:B1)
+ 164 - filter("GRANTEE#"="KZSROROL" AND ("CON_ID"=0 OR "CON_ID"=3))
+ 165 - filter("TYPE#"=:B1)
+ 166 - access("UE"."USER#"=:B1)
+ 167 - filter("UE"."TYPE#"=:B1)
+ 168 - access("UE"."USER#"=:B1)
+ 170 - access("U2"."TYPE#"=2 AND "U2"."SPARE2"=TO_NUMBER(SYS_CONTEXT('userenv','current_edition_id')))
+       filter("U2"."TYPE#"=2 AND "U2"."SPARE2"=TO_NUMBER(SYS_CONTEXT('userenv','current_edition_id')))
+ 171 - access("O2"."DATAOBJ#"=:B1 AND "O2"."TYPE#"=88 AND "O2"."OWNER#"="U2"."USER#")
+ 172 - filter("S"."INDX"="WB"."WAITING_SESSION" AND BITAND("S"."KSUSEFLG",1)<>0 AND BITAND("S"."KSSPAFLG",1)<>0 AND
+              "S"."INST_ID"=:INST_ID AND ("S"."CON_ID"=0 OR "S"."CON_ID"=3))
+ 173 - filter("S"."INDX"="W"."KSLWTSID")
+ 174 - filter("W"."KSLWTEVT"="E"."INDX")
+
+Hint Report (identified by operation id / Query Block Name / Object Alias):
+Total hints for statement: 5 (U - Unused (5))
+---------------------------------------------------------------------------
+
+   0 -  SEL$55A7162B
+         U -  NO_MERGE / rejected by IGNORE_OPTIM_EMBEDDED_HINTS
+
+   0 -  SEL$6B4ABCEA
+         U -  NO_MERGE / rejected by IGNORE_OPTIM_EMBEDDED_HINTS
+
+   0 -  SEL$87
+         U -  NO_MERGE / rejected by IGNORE_OPTIM_EMBEDDED_HINTS
+
+   0 -  SEL$D8170C7F
+         U -  NO_MERGE / rejected by IGNORE_OPTIM_EMBEDDED_HINTS
+
+ 147 -  SEL$55A7162A
+         U -  NO_MERGE / rejected by IGNORE_OPTIM_EMBEDDED_HINTS
+
+-------------------------------------------------------------------------------
+
+
+sys@CDB01> SPOOL OFF

@@ -1,0 +1,7 @@
+col NAME format a28
+col CATEGORY format a10
+col STATUS format a10
+col FM format a3
+col SQL_TEXT format a40
+SELECT NAME, CATEGORY, SQL_TEXT, TYPE, STATUS, FORCE_MATCHING FROM
+DBA_SQL_PROFILES;

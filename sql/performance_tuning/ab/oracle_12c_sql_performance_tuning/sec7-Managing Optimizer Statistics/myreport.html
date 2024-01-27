@@ -1,0 +1,941 @@
+tkyte@DB19C01> print :MY_REPORT
+<html>
+    <head>
+        <title>
+   Optimizer Statistics Operations Report
+ </title>
+        <style type="text/css">
+    body, table, input, select, textarea
+    {font:normal normal 8pt Verdana,Arial;text-decoration:none;color:#000000;}
+    .s8 {font-size:8pt;color:#006699}
+    .s9 {font-size:10pt;color:#006699}
+    .s10 {font-size:14pt;color:#006699;}
+    .s16 {border-width : 1px; border-color : #CCCC99;
+            border-style: solid;color:#006699;font-size:8pt;}
+    .s17 {border-width : 1px; border-color : #CCCC99;
+           border-style: solid;font-size:8pt;}
+    .s27 {border-width : 1px; border-color : #CCCC99; border-style: solid;}
+   </style>
+    </head>
+    <body>
+        <table class="ex" cellspacing="0" border="1" width="100%">
+            <tr BORDERCOLOR="#336699">
+                <th align="left" bgcolor="#CCCC99" class="s16">CDB Id</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation Id</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Target</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Start Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">End Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Status</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Total Tasks</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Successful Tasks<
+/th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Failed Tasks</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Active Tasks</th>
+
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1129</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>29-JUN-22 03.09.11.061105 PM +05:30</td>
+                <td>29-JUN-22 03.09.20.397313 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1128</td>
+                <td>alter_stats_history_retention</td>
+                <td/>
+                <td>29-JUN-22 03.04.51.217637 PM +05:30</td>
+                <td>29-JUN-22 03.04.51.234967 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1127</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>29-JUN-22 10.30.22.877604 AM +05:30</td>
+                <td>29-JUN-22 10.30.23.174095 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1126</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>29-JUN-22 10.30.22.545540 AM +05:30</td>
+                <td>29-JUN-22 10.30.22.877326 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1125</td>
+                <td>gather_database_stats (auto)</td>
+                <td>AUTO</td>
+                <td>29-JUN-22 10.30.02.727874 AM +05:30</td>
+                <td>29-JUN-22 10.30.22.545076 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>173</td>
+                <td>171</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1124</td>
+                <td>set_table_stats</td>
+                <td>"SOE"."CUSTOMERS2"</td>
+                <td>27-JUN-22 10.09.48.158212 PM +05:30</td>
+                <td>27-JUN-22 10.09.48.203997 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1105</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."CUSTOMERS2"</td>
+                <td>27-JUN-22 02.20.40.553954 PM +05:30</td>
+                <td>27-JUN-22 02.20.40.833141 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1104</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."CUSTOMERS2"</td>
+                <td>27-JUN-22 02.20.21.591425 PM +05:30</td>
+                <td>27-JUN-22 02.20.22.851893 PM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1103</td>
+                <td>drop_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 02.11.44.674931 AM +05:30</td>
+                <td>27-JUN-22 02.11.44.698980 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1102</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 02.11.39.230956 AM +05:30</td>
+                <td>27-JUN-22 02.11.39.232416 AM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1101</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."SYS_EXPORT_TABLE_01"</td>
+                <td>27-JUN-22 02.06.29.083782 AM +05:30</td>
+                <td>27-JUN-22 02.06.29.496453 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1100</td>
+                <td>export_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>27-JUN-22 02.06.13.585611 AM +05:30</td>
+                <td>27-JUN-22 02.06.17.376612 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1099</td>
+                <td>export_table_stats</td>
+                <td>"SOE"."ORDERS"</td>
+                <td>27-JUN-22 02.05.53.334385 AM +05:30</td>
+                <td>27-JUN-22 02.05.54.762477 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1098</td>
+                <td>create_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 02.05.29.562204 AM +05:30</td>
+                <td>27-JUN-22 02.05.29.574297 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1097</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 02.04.32.819197 AM +05:30</td>
+                <td>27-JUN-22 02.04.32.825782 AM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1096</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 01.55.30.710799 AM +05:30</td>
+                <td>27-JUN-22 01.55.30.764972 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1095</td>
+                <td>drop_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 01.42.27.427607 AM +05:30</td>
+                <td>27-JUN-22 01.42.27.440449 AM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1094</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."SYS_EXPORT_TABLE_01"</td>
+                <td>27-JUN-22 01.41.46.705018 AM +05:30</td>
+                <td>27-JUN-22 01.41.47.245751 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1093</td>
+                <td>export_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>27-JUN-22 01.41.29.455810 AM +05:30</td>
+                <td>27-JUN-22 01.41.33.891685 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1092</td>
+                <td>export_table_stats</td>
+                <td>"SOE"."ORDERS"</td>
+                <td>27-JUN-22 01.40.57.965326 AM +05:30</td>
+                <td>27-JUN-22 01.40.59.601409 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1091</td>
+                <td>create_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 01.40.45.210499 AM +05:30</td>
+                <td>27-JUN-22 01.40.45.228413 AM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1090</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>27-JUN-22 01.40.37.187152 AM +05:30</td>
+                <td>27-JUN-22 01.40.37.193196 AM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1089</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.33.21.331432 PM +05:30</td>
+                <td>26-JUN-22 11.33.21.367124 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1088</td>
+                <td>drop_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.23.37.709473 PM +05:30</td>
+                <td>26-JUN-22 11.23.37.723775 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1087</td>
+                <td>create_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.21.55.814654 PM +05:30</td>
+                <td>26-JUN-22 11.21.55.826422 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1086</td>
+                <td>drop_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.21.52.808297 PM +05:30</td>
+                <td>26-JUN-22 11.21.52.842544 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1085</td>
+                <td>create_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.21.28.468639 PM +05:30</td>
+                <td>26-JUN-22 11.21.28.476242 PM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1084</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."SYS_EXPORT_TABLE_01"</td>
+                <td>26-JUN-22 11.20.51.526887 PM +05:30</td>
+                <td>26-JUN-22 11.20.52.261925 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1083</td>
+                <td>export_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>26-JUN-22 11.20.31.656685 PM +05:30</td>
+                <td>26-JUN-22 11.20.36.155157 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1082</td>
+                <td>export_table_stats</td>
+                <td>"SOE"."ORDERS"</td>
+                <td>26-JUN-22 11.19.01.964571 PM +05:30</td>
+                <td>26-JUN-22 11.19.03.770852 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1081</td>
+                <td>create_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.18.26.450654 PM +05:30</td>
+                <td>26-JUN-22 11.18.26.454488 PM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1080</td>
+                <td>create_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.17.56.256953 PM +05:30</td>
+                <td>26-JUN-22 11.17.56.308571 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1079</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 11.17.17.252552 PM +05:30</td>
+                <td>26-JUN-22 11.17.17.795916 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1078</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 09.42.38.624203 PM +05:30</td>
+                <td>26-JUN-22 09.42.45.101991 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1077</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 09.42.38.059224 PM +05:30</td>
+                <td>26-JUN-22 09.42.38.623918 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1076</td>
+                <td>gather_database_stats (auto)</td>
+                <td>AUTO</td>
+                <td>26-JUN-22 09.42.17.579592 PM +05:30</td>
+                <td>26-JUN-22 09.42.38.058928 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>126</td>
+                <td>124</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1063</td>
+                <td>create_stat_table</td>
+                <td>"TKYTE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 08.30.19.692441 PM +05:30</td>
+                <td>26-JUN-22 08.30.19.707081 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1062</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."SYS_EXPORT_TABLE_01"</td>
+                <td>26-JUN-22 08.27.38.832779 PM +05:30</td>
+                <td>26-JUN-22 08.27.39.466055 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1061</td>
+                <td>export_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>26-JUN-22 08.27.14.997309 PM +05:30</td>
+                <td>26-JUN-22 08.27.20.750024 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1060</td>
+                <td>export_table_stats</td>
+                <td>"SOE"."ORDERS"</td>
+                <td>26-JUN-22 08.26.17.342934 PM +05:30</td>
+                <td>26-JUN-22 08.26.19.682793 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1059</td>
+                <td>create_stat_table</td>
+                <td>"SOE"."ORDERS_STATS"</td>
+                <td>26-JUN-22 08.24.32.336180 PM +05:30</td>
+                <td>26-JUN-22 08.24.32.352625 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1058</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."SOE_STATS"</td>
+                <td>26-JUN-22 08.07.09.168094 PM +05:30</td>
+                <td>26-JUN-22 08.07.09.218579 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1057</td>
+                <td>import_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>26-JUN-22 08.05.30.663897 PM +05:30</td>
+                <td>26-JUN-22 08.05.32.577638 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1056</td>
+                <td>import_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>26-JUN-22 08.03.18.040967 PM +05:30</td>
+                <td>26-JUN-22 08.03.20.827974 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1042</td>
+                <td>drop_stat_table</td>
+                <td>"SOE"."SOE_STATS"</td>
+                <td>26-JUN-22 08.00.29.360793 PM +05:30</td>
+                <td>26-JUN-22 08.00.29.505940 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1041</td>
+                <td>delete_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>26-JUN-22 07.58.56.309354 PM +05:30</td>
+                <td>26-JUN-22 07.58.58.433983 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1040</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 05.42.27.247612 PM +05:30</td>
+                <td>26-JUN-22 05.42.27.633949 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1039</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 05.42.26.727237 PM +05:30</td>
+                <td>26-JUN-22 05.42.27.247303 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1038</td>
+                <td>gather_database_stats (auto)</td>
+                <td>AUTO</td>
+                <td>26-JUN-22 05.41.54.774691 PM +05:30</td>
+                <td>26-JUN-22 05.42.26.726881 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>189</td>
+                <td>187</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1037</td>
+                <td>gather_table_stats</td>
+                <td>"TKYTE"."SYS_EXPORT_TABLE_01"</td>
+                <td>26-JUN-22 04.15.04.880847 PM +05:30</td>
+                <td>26-JUN-22 04.15.06.063398 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1036</td>
+                <td>export_stats_for_dp</td>
+                <td>TKYTE</td>
+                <td>26-JUN-22 04.14.27.726427 PM +05:30</td>
+                <td>26-JUN-22 04.14.35.464964 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1021</td>
+                <td>export_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>26-JUN-22 01.39.05.621709 PM +05:30</td>
+                <td>26-JUN-22 01.39.07.405017 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1020</td>
+                <td>create_stat_table</td>
+                <td>"SOE"."SOE_STATS"</td>
+                <td>26-JUN-22 01.38.55.702921 PM +05:30</td>
+                <td>26-JUN-22 01.38.55.725571 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1019</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>26-JUN-22 01.33.08.199989 PM +05:30</td>
+                <td>26-JUN-22 01.33.09.856015 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1018</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 01.32.34.939790 PM +05:30</td>
+                <td>26-JUN-22 01.32.35.405405 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1017</td>
+                <td>purge_stats</td>
+                <td/>
+                <td>26-JUN-22 01.32.34.708453 PM +05:30</td>
+                <td>26-JUN-22 01.32.34.939646 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1016</td>
+                <td>gather_database_stats (auto)</td>
+                <td>AUTO</td>
+                <td>26-JUN-22 01.31.56.361209 PM +05:30</td>
+                <td>26-JUN-22 01.32.34.708076 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>143</td>
+                <td>141</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1015</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 11.45.28.631756 PM +05:30</td>
+                <td>25-JUN-22 11.45.28.704152 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1014</td>
+                <td>unlock_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 11.45.23.570636 PM +05:30</td>
+                <td>25-JUN-22 11.45.23.572134 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1013</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 10.35.56.244294 PM +05:30</td>
+                <td>25-JUN-22 10.35.56.247111 PM +05:30</td>
+                <td>FAILED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1012</td>
+                <td>lock_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 10.32.06.343473 PM +05:30</td>
+                <td>25-JUN-22 10.32.06.345154 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>1011</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 10.25.42.831641 PM +05:30</td>
+                <td>25-JUN-22 10.25.44.191303 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>997</td>
+                <td>delete_pending_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.38.29.236989 PM +05:30</td>
+                <td>25-JUN-22 04.38.29.298114 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>996</td>
+                <td>restore_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.38.28.037632 PM +05:30</td>
+                <td>25-JUN-22 04.38.29.236721 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>995</td>
+                <td>publish_pending_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.38.28.016065 PM +05:30</td>
+                <td>25-JUN-22 04.38.29.298264 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>994</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.32.59.095744 PM +05:30</td>
+                <td>25-JUN-22 04.32.59.217959 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>993</td>
+                <td>set_table_prefs</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.32.52.045411 PM +05:30</td>
+                <td>25-JUN-22 04.32.52.049862 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>992</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 04.24.18.958505 PM +05:30</td>
+                <td>25-JUN-22 04.24.19.049167 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr valign="top" class="s16">
+                <td>3</td>
+                <td>991</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 03.37.21.100477 PM +05:30</td>
+                <td>25-JUN-22 03.37.21.504179 PM +05:30</td>
+                <td>COMPLETED</td>
+                <td>2</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+
+tkyte@DB19C01> spool off

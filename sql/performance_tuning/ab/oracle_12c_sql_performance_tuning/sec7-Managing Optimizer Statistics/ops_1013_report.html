@@ -1,0 +1,83 @@
+tkyte@DB19C01> print :MY_REPORT
+<html>
+    <head>
+        <title>
+   Optimizer Statistics Operations Report
+ </title>
+        <style type="text/css">
+    body, table, input, select, textarea
+    {font:normal normal 8pt Verdana,Arial;text-decoration:none;color:#000000;}
+    .s8 {font-size:8pt;color:#006699}
+    .s9 {font-size:10pt;color:#006699}
+    .s10 {font-size:14pt;color:#006699;}
+    .s16 {border-width : 1px; border-color : #CCCC99;
+            border-style: solid;color:#006699;font-size:8pt;}
+    .s17 {border-width : 1px; border-color : #CCCC99;
+           border-style: solid;font-size:8pt;}
+    .s27 {border-width : 1px; border-color : #CCCC99; border-style: solid;}
+   </style>
+    </head>
+    <body>
+        <table class="ex" cellspacing="0" border="1" width="100%">
+            <tr BORDERCOLOR="#336699">
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation Id</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Operation</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Target</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Start Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">End Time</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Status</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Total Tasks</th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Successful Tasks<
+/th>
+                <th align="left" bgcolor="#CCCC99" class="s16">Failed Tasks</th>
+
+                <th align="left" bgcolor="#CCCC99" class="s16">Active Tasks</th>
+
+            </tr>
+            <tr valign="top" class="s16">
+                <td>1013</td>
+                <td>gather_table_stats</td>
+                <td>"SOE"."ORDERS2"</td>
+                <td>25-JUN-22 10.35.56.244294 PM +05:30</td>
+                <td>25-JUN-22 10.35.56.247111 PM +05:30</td>
+                <td>FAILED</td>
+                <td/>
+                <td/>
+                <td/>
+                <td/>
+            </tr>
+        </table>
+        <table class="ex" cellspacing="0" border="1" bgcolor="#FFE87C" width="10
+0%">
+            <tr valign="center" class="s16">
+                <td align="center">
+                    <hr/>
+                    <b>
+                        <font size="2"> T   A   S   K   S </font>
+                    </b>
+                    <hr/>
+                    <table class="ex" cellspacing="0" border="1" bgcolor="#FFFFF
+F" width="97%">
+                        <tr BORDERCOLOR="#336699">
+                            <th align="left" bgcolor="#CCCC99" class="s16">Targe
+t</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Type<
+/th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Start
+ Time</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">End T
+ime</th>
+                            <th align="left" bgcolor="#CCCC99" class="s16">Statu
+s</th>
+                        </tr>
+                    </table>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+
+tkyte@DB19C01> spool off
