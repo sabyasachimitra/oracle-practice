@@ -71,8 +71,10 @@ Balthazar Brauerei       5430 Hercule Trippel        2018       451
 Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
 */
 
--- Listing 1-3. Using just a single scalar subquery and value concatenation
-
+/* 
+   The following query achieves the same result but unlike the above query 
+   it does not access the YEARLY_SALES view twice in two scalar queries.
+*/
 SELECT
    BREWERY_NAME
  , PRODUCT_ID AS P_ID
@@ -99,7 +101,7 @@ FROM (
    WHERE BP.BREWERY_ID = 518
 )
 ORDER BY PRODUCT_ID;
-
+--
 -- Listing 1-4. Using analytic function to be able to retrieve all columns if desired
 
 SELECT
