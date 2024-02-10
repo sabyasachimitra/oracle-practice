@@ -347,4 +347,35 @@ LEFT OUTER JOIN LATERAL(
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
 
+-- Output: This time we have moved the LEFT OUTER query condition from right to left query and result is changed
+-- Why? 
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME           YR    YR_QTY
+_____________________ _______ ___________________ _____ _________
+Balthazar Brauerei       5310 Monks and Nuns
+Balthazar Brauerei       5430 Hercule Trippel
+Balthazar Brauerei       6520 Der Helle Kumpel
+*/
+
 /* ***************************************************** */
+
+
+SELECT
+   BP.BREWERY_NAME
+ , BP.PRODUCT_ID AS P_ID
+ , BP.PRODUCT_NAME
+ , TOP_YS.YR
+ , TOP_YS.YR_QTY
+FROM PRACTICAL.BREWERY_PRODUCTS BP
+LEFT OUTER JOIN LATERAL(
+   SELECT
+      YS.YR
+    , YS.YR_QTY
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.PRODUCT_ID = BP.PRODUCT_ID
+   ORDER BY YS.YR_QTY DESC
+   FETCH FIRST ROW ONLY
+) TOP_YS
+   ON BP.BREWERY_ID = 518 AND TOP_YS.YR_QTY < 400;
+WHERE BP.BREWERY_ID = 518
+ORDER BY BP.PRODUCT_ID;
