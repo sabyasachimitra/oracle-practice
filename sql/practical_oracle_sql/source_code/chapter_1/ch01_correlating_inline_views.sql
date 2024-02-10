@@ -122,15 +122,55 @@ FROM (
          ORDER BY YS.YR_QTY DESC
       ) AS RN
    FROM PRACTICAL.BREWERY_PRODUCTS BP
-   JOIN YEARLY_SALES YS
+   JOIN PRACTICAL.YEARLY_SALES YS
       ON YS.PRODUCT_ID = BP.PRODUCT_ID
    WHERE BP.BREWERY_ID = 518
 )
 WHERE RN = 1
 ORDER BY PRODUCT_ID;
-
+--
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns         2017       582
+Balthazar Brauerei       5430 Hercule Trippel        2018       451
+Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
+*/
+--
+/* if you run the inner SQL separetly you can understand how it extracts data */
+--
+SELECT
+      BP.BREWERY_NAME
+    , BP.PRODUCT_ID
+    , BP.PRODUCT_NAME
+    , YS.YR
+    , YS.YR_QTY
+    , ROW_NUMBER() OVER (
+         PARTITION BY BP.PRODUCT_ID
+         ORDER BY YS.YR_QTY DESC
+      ) AS RN
+   FROM PRACTICAL.BREWERY_PRODUCTS BP
+   JOIN PRACTICAL.YEARLY_SALES YS
+      ON YS.PRODUCT_ID = BP.PRODUCT_ID
+   WHERE BP.BREWERY_ID = 518;
+--
+-- for each PRODUCT_ID and PRODUCT_NAME, the query ranks yearly sales and forms and window
+-- and finally the outer query picks the rank 1 row from each window
+/*
+BREWERY_NAME             PRODUCT_ID PRODUCT_NAME             YR    YR_QTY    RN
+_____________________ _____________ ___________________ _______ _________ _____
+Balthazar Brauerei             5310 Monks and Nuns         2017       582     1
+Balthazar Brauerei             5310 Monks and Nuns         2016       478     2
+Balthazar Brauerei             5310 Monks and Nuns         2018       425     3
+Balthazar Brauerei             5430 Hercule Trippel        2018       451     1
+Balthazar Brauerei             5430 Hercule Trippel        2017       344     2
+Balthazar Brauerei             5430 Hercule Trippel        2016       261     3
+Balthazar Brauerei             6520 Der Helle Kumpel       2017       458     1
+Balthazar Brauerei             6520 Der Helle Kumpel       2016       415     2
+Balthazar Brauerei             6520 Der Helle Kumpel       2018       357     3
+*/   
 -- Listing 1-5. Achieving the same with a lateral inline view
-
+-- CROSS JOIN lateral
 SELECT
    BP.BREWERY_NAME
  , BP.PRODUCT_ID AS P_ID
@@ -214,8 +254,15 @@ CROSS APPLY(
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
 
+/* All the above queries uses OREDER BY DESC and then FETCH FIRST ROW ONLY to identify the top yearly sale */
+
 -- Listing 1-7. Using outer apply when you need outer join functionality
 
+/* The below query uses LEFT OUTER JOIN using OUTER APPLY clause. 
+   It left side pulls records from BREWERY_PRODUCTS table for BREWERY_ID = 518 
+   and right side pulls records from YEARLY_SALES view with sales quality less than 400
+   and do a LEFT OUTER join om Product ID.
+*/
 SELECT
    BP.BREWERY_NAME
  , BP.PRODUCT_ID AS P_ID
@@ -235,7 +282,49 @@ OUTER APPLY(
 ) TOP_YS
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
+--
+-- PRODUCT_ID 5310 yearly sales quantity is NULL because none of its yearly sales quantity is less than 400
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns
+Balthazar Brauerei       5430 Hercule Trippel        2017       344
+Balthazar Brauerei       6520 Der Helle Kumpel       2018       357
+*/
+--
+ SELECT
+      *
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.YR_QTY < 400
+   ORDER BY YS.YR_QTY DESC;
+--
+/* As you can see 5310 does not appear in the output (its sales quantity is 478 and 582 for )
+/*
+     YR    PRODUCT_ID PRODUCT_NAME           YR_QTY
+_______ _____________ ___________________ _________
+   2016          7790 Summer in India           377
+   2018          6520 Der Helle Kumpel          357
+   2017          5430 Hercule Trippel           344
+   2016          4160 Reindeer Fuel             331
+   2017          7790 Summer in India           321
+   2018          4040 Coalminers Sweat          300
+   2016          4040 Coalminers Sweat          286
+   2018          7790 Summer in India           263
+   2016          5430 Hercule Trippel           261
+   2017          4040 Coalminers Sweat          227
+   2017          7950 Pale Rider Rides          210
+   2016          7950 Pale Rider Rides          182
+   2018          4280 Hoppy Crude Oil           132
+   2016          6600 Hazy Pink Cloud           121
 
+     YR    PRODUCT_ID PRODUCT_NAME          YR_QTY
+_______ _____________ __________________ _________
+   2017          6600 Hazy Pink Cloud          105
+   2016          4280 Hoppy Crude Oil           99
+   2018          6600 Hazy Pink Cloud           98
+   2017          4280 Hoppy Crude Oil           72
+*/   
+--   
 -- Listing 1-8. Outer join with the lateral keyword
 
 SELECT
@@ -254,7 +343,7 @@ LEFT OUTER JOIN LATERAL(
    ORDER BY YS.YR_QTY DESC
    FETCH FIRST ROW ONLY
 ) TOP_YS
-   ON TOP_YS.YR_QTY < 500
+   ON TOP_YS.YR_QTY < 400
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
 
