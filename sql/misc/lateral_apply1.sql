@@ -1,4 +1,9 @@
 /* LATERAL Inline Views, CROSS APPLY and OUTER APPLY Joins */
+/*
+    1)  CROSS JOIN LATERAL/JOIN LATERAL/CROSS APPLY: They're used alternatively and have the same 
+        functionality. JOIN LATERAL needs ON clause. 
+    2)  OUTER APPLY/LEFT JOIN LATERAL/RIGHT JOIN LATERAL: They work similar to OUTER JOIN
+*/   
 /* Data Setup */
 CREATE TABLE TEST_A
 (
