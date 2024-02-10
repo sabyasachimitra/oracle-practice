@@ -334,7 +334,7 @@ SELECT
  , TOP_YS.YR
  , TOP_YS.YR_QTY
 FROM PRACTICAL.BREWERY_PRODUCTS BP
-LEFT OUTER JOIN LATERAL(
+LEFT JOIN LATERAL(
    SELECT
       YS.YR
     , YS.YR_QTY
@@ -347,7 +347,7 @@ LEFT OUTER JOIN LATERAL(
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
 
--- Output: This time we have moved the LEFT OUTER query condition from right to left query and result is changed
+-- Output: This time we have moved the LEFT JOIN query condition from right to left query and result is changed
 -- Why? Because in previous qurery, top sales quantiy less 400 along with their year of sales were extracted from 
 -- YEARLY_SALES first and then the result set was LEFT JOINed with the outer query using OUTER APPLY.
 -- In the second query, top sales quantity (all are greater than 400) along with their year of sales were 
@@ -390,6 +390,8 @@ Balthazar Brauerei       5310 Monks and Nuns
 Balthazar Brauerei       5430 Hercule Trippel        2018       451
 Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
 */
+
+
 /* ***************************************************** */
 
 
