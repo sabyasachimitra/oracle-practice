@@ -203,7 +203,7 @@ COMMIT;
     Display employee and department tables. 
 */
 --
-select * from department;
+SELECT * FROM DEPARTMENT;
 /*
     DEPARTMENT_ID DEPARTMENT_NAME    LOCATION
     ________________ __________________ ___________
@@ -213,7 +213,7 @@ select * from department;
                 40 OPERATIONS         BOSTON
 */
 --
-select employee_id, employee_name, department_id from employees
+SELECT EMPLOYEE_ID, EMPLOYEE_NAME, DEPARTMENT_ID FROM EMPLOYEES;
 --
 /*
     EMPLOYEE_ID EMPLOYEE_NAME       SALARY    DEPARTMENT_ID
@@ -246,14 +246,14 @@ select employee_id, employee_name, department_id from employees
     this example we try to reference the DEPARTMENT_ID column from the DEPARTMENTS 
     table, which results in a error.
 */
-select department_name, employee_name
-from   departments d
-       cross join (
-                   select employee_name
-                   from   employees e
-                   where  e.department_id = d.department_id
+SELECT DEPARTMENT_NAME, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       CROSS JOIN (
+                   SELECT EMPLOYEE_NAME
+                   FROM   EMPLOYEES E
+                   WHERE  E.DEPARTMENT_ID = D.DEPARTMENT_ID
                   )
-order by 1, 2;
+ORDER BY 1, 2;
 --
 /* 
     SQL Error: ORA-00904: "D"."DEPARTMENT_ID": invalid identifier
@@ -264,12 +264,12 @@ order by 1, 2;
    view to be correlated. This is also known as left correlation.
 */
 --
-select department_name, employee_name
-from   departments d
-       cross join lateral (select employee_name
-                           from   employees e
-                           where  e.department_id = d.department_id)
-order by 1, 2;
+SELECT DEPARTMENT_NAME, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       CROSS JOIN LATERAL (SELECT EMPLOYEE_NAME
+                           FROM   EMPLOYEES E
+                           WHERE  E.DEPARTMENT_ID = D.DEPARTMENT_ID)
+ORDER BY 1, 2;
 /*
     DEPARTMENT_NAME    EMPLOYEE_NAME
     __________________ ________________
@@ -292,13 +292,13 @@ order by 1, 2;
 /* 
     Alternatively, we can use join with lateral and give a dummy ON condition
 */
-select department_name, employee_name
-from   departments d
-       join lateral (select employee_name
-                           from   employees e
-                           where  e.department_id = d.department_id)
-        on 1=1
-order by 1, 2;
+SELECT DEPARTMENT_NAME, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       JOIN LATERAL (SELECT EMPLOYEE_NAME
+                           FROM   EMPLOYEES E
+                           WHERE  E.DEPARTMENT_ID = D.DEPARTMENT_ID)
+        ON 1=1
+ORDER BY 1, 2;
 --
 -- CROSS APPLY
 --
@@ -306,13 +306,13 @@ order by 1, 2;
     It returns all rows from the left hand table, where at least one row is returned 
     by the table reference or collection expression on the right. 
 */
-select department_name, employee_id, employee_name
-from   departments d
-       cross apply (select employee_id, employee_name
-                    from   employees e
-                    where  salary >= 2000
-                    and    e.department_id = d.department_id)
-order by 1, 2, 3;    
+SELECT DEPARTMENT_NAME, EMPLOYEE_ID, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       CROSS APPLY (SELECT EMPLOYEE_ID, EMPLOYEE_NAME
+                    FROM   EMPLOYEES E
+                    WHERE  SALARY >= 2000
+                    AND    E.DEPARTMENT_ID = D.DEPARTMENT_ID)
+ORDER BY 1, 2, 3;    
 /*
     DEPARTMENT_NAME       EMPLOYEE_ID EMPLOYEE_NAME
     __________________ ______________ ________________
@@ -329,13 +329,13 @@ order by 1, 2, 3;
     refer to columns of the inner corelated view to the right which we can do in CROSS APPLY. 
     The following query will throw error: SQL Error: ORA-00904: "EMPLOYEE_NAME": invalid identifier.
 */
-select department_name, employee_id, employee_name
-from   departments d
-       where exists (select employee_id, employee_name
-                    from   employees e
-                    where  salary >= 2000
-                    and    e.department_id = d.department_id)
-order by 1;
+SELECT DEPARTMENT_NAME, EMPLOYEE_ID, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       WHERE EXISTS (SELECT EMPLOYEE_ID, EMPLOYEE_NAME
+                    FROM   EMPLOYEES E
+                    WHERE  SALARY >= 2000
+                    AND    E.DEPARTMENT_ID = D.DEPARTMENT_ID)
+ORDER BY 1;
 --
 /* 
     OUTER APPLY - The OUTER APPLY join is a variant of the LEFT OUTER JOIN with correlation support. 
@@ -346,13 +346,13 @@ order by 1;
     is less than or equals to 200 then it will display NULL for the EMPLOYEE_ID and EMPLOYEE_NAME columns
 */
 --
-select department_name, employee_id, employee_name
-from   departments d
-       outer apply (select employee_id, employee_name
-                    from   employees e
-                    where  salary > 2000
-                    and    e.department_id = d.department_id)
-order by 1, 2, 3;
+SELECT DEPARTMENT_NAME, EMPLOYEE_ID, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       OUTER APPLY (SELECT EMPLOYEE_ID, EMPLOYEE_NAME
+                    FROM   EMPLOYEES E
+                    WHERE  SALARY > 2000
+                    AND    E.DEPARTMENT_ID = D.DEPARTMENT_ID)
+ORDER BY 1, 2, 3;
 --
 /*
 DEPARTMENT_NAME       EMPLOYEE_ID EMPLOYEE_NAME
@@ -369,14 +369,14 @@ SALES                        7698 BLAKE
 /* 
     The same functionality can be achived using LEFT JOIN LATERAL. 
 */
-select department_name, employee_id, employee_name
-from   departments d
-       left join lateral (select employee_id, employee_name
-                          from   employees e
-                          where  salary > 2000
-                          and    e.department_id = d.department_id) e
-                 on e.department_id = d.department_id
-order by 1, 2, 3;
+SELECT DEPARTMENT_NAME, EMPLOYEE_ID, EMPLOYEE_NAME
+FROM   DEPARTMENTS D
+       LEFT JOIN LATERAL (SELECT EMPLOYEE_ID, EMPLOYEE_NAME
+                          FROM   EMPLOYEES E
+                          WHERE  SALARY > 2000
+                          AND    E.DEPARTMENT_ID = D.DEPARTMENT_ID) E
+                 ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+ORDER BY 1, 2, 3;
 --
 /*
     DEPARTMENT_NAME       EMPLOYEE_ID EMPLOYEE_NAME
@@ -407,17 +407,17 @@ order by 1, 2, 3;
 /*
     We can use more than one tables in lateral joins
 */
-select department_name, l.location_id, employee_id, first_name, city
-from   hr.departments d
-        outer apply (select employee_id, first_name
-                    from   hr.employees e
-                    where  e.department_id = d.department_id) 
-        right join lateral (
-                    select location_id, city
-                    from hr.locations l
-                    ) l     
-            on l.location_id = d.location_id
-order by 1, 2, 3;
+SELECT DEPARTMENT_NAME, L.LOCATION_ID, EMPLOYEE_ID, FIRST_NAME, CITY
+FROM   HR.DEPARTMENTS D
+        OUTER APPLY (SELECT EMPLOYEE_ID, FIRST_NAME
+                    FROM   HR.EMPLOYEES E
+                    WHERE  E.DEPARTMENT_ID = D.DEPARTMENT_ID) 
+        RIGHT JOIN LATERAL (
+                    SELECT LOCATION_ID, CITY
+                    FROM HR.LOCATIONS L
+                    ) L     
+            ON L.LOCATION_ID = D.LOCATION_ID
+ORDER BY 1, 2, 3;
 --
 -- output has been trimmed
 --
