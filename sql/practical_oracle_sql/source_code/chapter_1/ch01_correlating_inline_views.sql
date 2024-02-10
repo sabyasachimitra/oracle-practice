@@ -348,7 +348,12 @@ WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
 
 -- Output: This time we have moved the LEFT OUTER query condition from right to left query and result is changed
--- Why? 
+-- Why? Because in previous qurery, top sales quantiy less 400 along with their year of sales were extracted from 
+-- YEARLY_SALES first and then the result set was LEFT JOINed with the outer query using OUTER APPLY.
+-- In the second query, top sales quantity (all are greater than 400) along with their year of sales were 
+-- extracted and then was LEFT JOINed with LATERAL clause so right side table produced NULL values for its
+-- columns.
+
 /*
 BREWERY_NAME             P_ID PRODUCT_NAME           YR    YR_QTY
 _____________________ _______ ___________________ _____ _________
@@ -356,10 +361,7 @@ Balthazar Brauerei       5310 Monks and Nuns
 Balthazar Brauerei       5430 Hercule Trippel
 Balthazar Brauerei       6520 Der Helle Kumpel
 */
-
-/* ***************************************************** */
-
-
+--
 SELECT
    BP.BREWERY_NAME
  , BP.PRODUCT_ID AS P_ID
@@ -376,6 +378,18 @@ LEFT OUTER JOIN LATERAL(
    ORDER BY YS.YR_QTY DESC
    FETCH FIRST ROW ONLY
 ) TOP_YS
-   ON BP.BREWERY_ID = 518 AND TOP_YS.YR_QTY < 400;
+   ON TOP_YS.YR_QTY < 500
 WHERE BP.BREWERY_ID = 518
 ORDER BY BP.PRODUCT_ID;
+--
+-- Output: This the sales and year value for two products were not NULL because we changed the sales qty. to 500.
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns
+Balthazar Brauerei       5430 Hercule Trippel        2018       451
+Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
+*/
+/* ***************************************************** */
+
+
