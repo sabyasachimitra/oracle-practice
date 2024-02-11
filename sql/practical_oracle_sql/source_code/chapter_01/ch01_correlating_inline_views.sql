@@ -10,6 +10,7 @@
    Correlating Inline Views
    
    To be executed in schema PRACTICAL
+   New changes
 ** ***************************************************** */
 
 /* -----------------------------------------------------
