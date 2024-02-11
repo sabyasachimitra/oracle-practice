@@ -44,272 +44,272 @@ column rn            format 9
 
 -- Listing 2-2. Data for two customers and their orders
 
-select
-   customer_id as c_id, customer_name, ordered
- , product_id  as p_id, product_name , qty
-from customer_order_products
-where customer_id in (50042, 50741)
-order by customer_id, product_id;
+SELECT
+   CUSTOMER_ID AS C_ID, CUSTOMER_NAME, ORDERED
+ , PRODUCT_ID  AS P_ID, PRODUCT_NAME , QTY
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID IN (50042, 50741)
+ORDER BY CUSTOMER_ID, PRODUCT_ID;
 
 -- Listing 2-3. Data for two breweries and the products bought from them
 
-select
-   brewery_id as b_id, brewery_name
- , product_id as p_id, product_name
-from brewery_products
-where brewery_id in (518, 523)
-order by brewery_id, product_id;
+SELECT
+   BREWERY_ID AS B_ID, BREWERY_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID IN (518, 523)
+ORDER BY BREWERY_ID, PRODUCT_ID;
 
 -- Listing 2-4. Concatenating the results of two queries
 
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-union all
-select product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523;
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+UNION ALL
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523;
 
 -- Listing 2-5. Different columns from the two queries
 
-select
-   customer_id as c_or_b_id, customer_name as c_or_b_name
- , product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-union all
-select
-   brewery_id, brewery_name
- , product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523;
+SELECT
+   CUSTOMER_ID AS C_OR_B_ID, CUSTOMER_NAME AS C_OR_B_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+UNION ALL
+SELECT
+   BREWERY_ID, BREWERY_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523;
 
 -- Attempting to order by a table column leads to ORA-00904: "PRODUCT_ID": invalid identifier
 
-select
-   customer_id as c_or_b_id, customer_name as c_or_b_name
- , product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-union all
-select
-   brewery_id, brewery_name
- , product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523
-order by product_id;
+SELECT
+   CUSTOMER_ID AS C_OR_B_ID, CUSTOMER_NAME AS C_OR_B_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+UNION ALL
+SELECT
+   BREWERY_ID, BREWERY_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523
+ORDER BY PRODUCT_ID;
 
 -- Ordering by column alias works
 
-select
-   customer_id as c_or_b_id, customer_name as c_or_b_name
- , product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-union all
-select
-   brewery_id, brewery_name
- , product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523
-order by p_id;
+SELECT
+   CUSTOMER_ID AS C_OR_B_ID, CUSTOMER_NAME AS C_OR_B_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+UNION ALL
+SELECT
+   BREWERY_ID, BREWERY_NAME
+ , PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523
+ORDER BY P_ID;
 
 -- Listing 2-6. Union is a true set operation that implicitly performs a distinct of the query result
 
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-union
-select product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523
-order by p_id;
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+UNION
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523
+ORDER BY P_ID;
 
 -- Where union is the distinct joined results, intersect is the distinct common results
 
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-intersect
-select product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523
-order by p_id;
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+INTERSECT
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523
+ORDER BY P_ID;
 
 -- Minus is the set subtraction - also known as except
 
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-minus
-select product_id as p_id, product_name
-from brewery_products
-where brewery_id = 523
-order by p_id;
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+MINUS
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.BREWERY_PRODUCTS
+WHERE BREWERY_ID = 523
+ORDER BY P_ID;
 
 -- Listing 2-7. The customer product data viewed as a collection type
 
-select
-   customer_id as c_id, customer_name
- , product_coll
-from customer_order_products_obj
-where customer_id in (50042, 50741)
-order by customer_id;
+SELECT
+   CUSTOMER_ID AS C_ID, CUSTOMER_NAME
+ , PRODUCT_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ
+WHERE CUSTOMER_ID IN (50042, 50741)
+ORDER BY CUSTOMER_ID;
 
 -- Listing 2-8. Doing union as a multiset operation on the collections
 
-select
-   whitehart.product_coll
-   multiset union
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET UNION
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- Multiset union all is the same as multiset union
 
-select
-   whitehart.product_coll
-   multiset union all
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET UNION ALL
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- Multiset union distinct exists too
 
-select
-   whitehart.product_coll
-   multiset union distinct
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET UNION DISTINCT
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- For multiset an intersect all is possible
 
-select
-   whitehart.product_coll
-   multiset intersect all
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET INTERSECT ALL
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- As well as an intersect distinct
 
-select
-   whitehart.product_coll
-   multiset intersect distinct
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET INTERSECT DISTINCT
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- Naturally there is an except all as well
 
-select
-   whitehart.product_coll
-   multiset except all
-   hyggehumle.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   WHITEHART.PRODUCT_COLL
+   MULTISET EXCEPT ALL
+   HYGGEHUMLE.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- More interesting results of the reversed except all
 
-select
-   hyggehumle.product_coll
-   multiset except all
-   whitehart.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   HYGGEHUMLE.PRODUCT_COLL
+   MULTISET EXCEPT ALL
+   WHITEHART.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- Except distinct result shows distinct is performed before set subtraction
 
-select
-   hyggehumle.product_coll
-   multiset except distinct
-   whitehart.product_coll
-      as multiset_coll
-from customer_order_products_obj whitehart
-cross join customer_order_products_obj hyggehumle
-where whitehart.customer_id = 50042
-and hyggehumle.customer_id = 50741;
+SELECT
+   HYGGEHUMLE.PRODUCT_COLL
+   MULTISET EXCEPT DISTINCT
+   WHITEHART.PRODUCT_COLL
+      AS MULTISET_COLL
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ WHITEHART
+CROSS JOIN PRACTICAL.CUSTOMER_ORDER_PRODUCTS_OBJ HYGGEHUMLE
+WHERE WHITEHART.CUSTOMER_ID = 50042
+AND HYGGEHUMLE.CUSTOMER_ID = 50741;
 
 -- Listing 2-9. Minus is like multiset except distinct
 
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50741
-minus
-select product_id as p_id, product_name
-from customer_order_products
-where customer_id = 50042
-order by p_id;
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+MINUS
+SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50042
+ORDER BY P_ID;
 
 -- Listing 2-10. Emulating minus all using multiset except all
 
-select
-   minus_all_table.id   as p_id
- , minus_all_table.name as product_name
-from table(
-   cast(
-      multiset(
-         select product_id, product_name
-         from customer_order_products
-         where customer_id = 50741
+SELECT
+   MINUS_ALL_TABLE.ID   AS P_ID
+ , MINUS_ALL_TABLE.NAME AS PRODUCT_NAME
+FROM TABLE(
+   CAST(
+      MULTISET(
+         SELECT PRODUCT_ID, PRODUCT_NAME
+         FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+         WHERE CUSTOMER_ID = 50741
       )
-      as id_name_coll_type
+      AS ID_NAME_COLL_TYPE
    )
-   multiset except all
-   cast(
-      multiset(
-         select product_id, product_name
-         from customer_order_products
-         where customer_id = 50042
+   MULTISET EXCEPT ALL
+   CAST(
+      MULTISET(
+         SELECT PRODUCT_ID, PRODUCT_NAME
+         FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+         WHERE CUSTOMER_ID = 50042
       )
-      as id_name_coll_type
+      AS ID_NAME_COLL_TYPE
    )
-) minus_all_table
-order by p_id;
+) MINUS_ALL_TABLE
+ORDER BY P_ID;
 
 -- Listing 2-11. Emulating minus all using analytic row_number function
 
-select
-   product_id as p_id
- , product_name
- , row_number() over (
-      partition by product_id, product_name
-      order by rownum
-   ) as rn
-from customer_order_products
-where customer_id = 50741
-minus
-select
-   product_id as p_id
- , product_name
- , row_number() over (
-      partition by product_id, product_name
-      order by rownum
-   ) as rn
-from customer_order_products
-where customer_id = 50042
-order by p_id;
+SELECT
+   PRODUCT_ID AS P_ID
+ , PRODUCT_NAME
+ , ROW_NUMBER() OVER (
+      PARTITION BY PRODUCT_ID, PRODUCT_NAME
+      ORDER BY ROWNUM
+   ) AS RN
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741
+MINUS
+SELECT
+   PRODUCT_ID AS P_ID
+ , PRODUCT_NAME
+ , ROW_NUMBER() OVER (
+      PARTITION BY PRODUCT_ID, PRODUCT_NAME
+      ORDER BY ROWNUM
+   ) AS RN
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50042
+ORDER BY P_ID;
 
 /* ***************************************************** */
