@@ -305,6 +305,9 @@ ORDER BY 1, 2;
 /*  The CROSS APPLY join is a variant of the ANSI CROSS JOIN with correlation support.
     It returns all rows from the left hand table, where at least one row is returned 
     by the table reference or collection expression on the right. 
+    The right side of the APPLY can reference columns from tables in 
+    the FROM clause to the left. The example below uses a correlated inline view.
+
 */
 SELECT DEPARTMENT_NAME, EMPLOYEE_ID, EMPLOYEE_NAME
 FROM   DEPARTMENTS D

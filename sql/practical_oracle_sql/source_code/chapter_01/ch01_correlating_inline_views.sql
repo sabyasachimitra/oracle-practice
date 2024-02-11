@@ -390,8 +390,144 @@ Balthazar Brauerei       5310 Monks and Nuns
 Balthazar Brauerei       5430 Hercule Trippel        2018       451
 Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
 */
-
-
+--
+--
+/* 
+   CROSS APPLY Vs OUTER APPLY
+*/
+--
+-- OUTER APPLY 
+--
+SELECT
+   BP.BREWERY_NAME
+ , BP.PRODUCT_ID AS P_ID
+ , BP.PRODUCT_NAME
+ , TOP_YS.YR
+ , TOP_YS.YR_QTY
+FROM PRACTICAL.BREWERY_PRODUCTS BP
+OUTER APPLY(
+   SELECT
+      YS.YR
+    , YS.YR_QTY
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.PRODUCT_ID = BP.PRODUCT_ID
+   AND YS.YR_QTY < 400
+   ORDER BY YS.YR_QTY DESC
+   FETCH FIRST ROW ONLY
+) TOP_YS
+WHERE BP.BREWERY_ID = 518
+ORDER BY BP.PRODUCT_ID;
+--
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns
+Balthazar Brauerei       5430 Hercule Trippel        2017       344
+Balthazar Brauerei       6520 Der Helle Kumpel       2018       357
+*/
+--
+-- CROSS APPLY
+--
+SELECT
+   BP.BREWERY_NAME
+ , BP.PRODUCT_ID AS P_ID
+ , BP.PRODUCT_NAME
+ , TOP_YS.YR
+ , TOP_YS.YR_QTY
+FROM PRACTICAL.BREWERY_PRODUCTS BP
+CROSS APPLY(
+   SELECT
+      YS.YR
+    , YS.YR_QTY
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.PRODUCT_ID = BP.PRODUCT_ID
+   AND YS.YR_QTY < 400
+   ORDER BY YS.YR_QTY DESC
+   FETCH FIRST ROW ONLY
+) TOP_YS
+WHERE BP.BREWERY_ID = 518
+ORDER BY BP.PRODUCT_ID;
+--
+--
+-- In CROSS APPLY we are getting two rows because the unmatched row is eliminated.
+-- CROSS APPLY works same way as INNER JOIN with left coorelation lateral 
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5430 Hercule Trippel        2017       344
+Balthazar Brauerei       6520 Der Helle Kumpel       2018       357
+*/
+--
+--
+/*
+   OUTER APPLY Vs OUTER JOIN LATERAL
+*/
+--
+-- LEFT OUTER JOIN LATERAL
+--
+-- Problem: For each beer (product id) display the best-selling 
+-- year and quantity if that year sold less than 500 bottles.
+--
+SELECT
+   BP.BREWERY_NAME
+ , BP.PRODUCT_ID AS P_ID
+ , BP.PRODUCT_NAME
+ , TOP_YS.YR
+ , TOP_YS.YR_QTY
+FROM PRACTICAL.BREWERY_PRODUCTS BP
+LEFT OUTER JOIN LATERAL(
+   SELECT
+      YS.YR
+    , YS.YR_QTY
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.PRODUCT_ID = BP.PRODUCT_ID
+   ORDER BY YS.YR_QTY DESC
+   FETCH FIRST ROW ONLY
+) TOP_YS
+   ON TOP_YS.YR_QTY < 500
+WHERE BP.BREWERY_ID = 518
+ORDER BY BP.PRODUCT_ID;
+--
+--
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns
+Balthazar Brauerei       5430 Hercule Trippel        2018       451
+Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
+*/
+--
+-- OUTER APPLY 
+-- For each beer (product ID), display best-selling year and 
+-- quantiy out of those years that sold less than 500 bottles
+--
+SELECT
+   BP.BREWERY_NAME
+ , BP.PRODUCT_ID AS P_ID
+ , BP.PRODUCT_NAME
+ , TOP_YS.YR
+ , TOP_YS.YR_QTY
+FROM PRACTICAL.BREWERY_PRODUCTS BP
+OUTER APPLY (
+   SELECT
+      YS.PRODUCT_ID,
+      YS.YR
+    , YS.YR_QTY
+   FROM PRACTICAL.YEARLY_SALES YS
+   WHERE YS.PRODUCT_ID = BP.PRODUCT_ID AND YS.YR_QTY < 500
+   ORDER BY YS.YR_QTY DESC
+   FETCH FIRST ROW ONLY
+) TOP_YS
+WHERE BP.BREWERY_ID = 518
+ORDER BY BP.PRODUCT_ID;
+--
+/*
+BREWERY_NAME             P_ID PRODUCT_NAME             YR    YR_QTY
+_____________________ _______ ___________________ _______ _________
+Balthazar Brauerei       5310 Monks and Nuns         2016       478
+Balthazar Brauerei       5430 Hercule Trippel        2018       451
+Balthazar Brauerei       6520 Der Helle Kumpel       2017       458
+*/
 /* ***************************************************** */
 
 
