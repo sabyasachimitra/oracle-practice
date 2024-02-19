@@ -333,13 +333,13 @@ create index picking_log_location_fk on picking_log (location_id);
    Create types and type bodies
    ----------------------------------------------------- */
 
-create or replace type id_name_type as object (
+create or replace type practical.id_name_type as object (
    id     integer
  , name   varchar2(20 char)
 );
 /
 
-create or replace type id_name_coll_type
+create or replace type practical.id_name_coll_type
    as table of id_name_type;
 /
 
@@ -904,19 +904,19 @@ join orderlines ol
 join products p
    on p.id = ol.product_id;
 
-create or replace view customer_order_products_obj
+create or replace view practical.customer_order_products_obj
 as
 select
    customer_id
  , max(customer_name) as customer_name
  , cast(
       collect(
-         id_name_type(product_id, product_name)
+         practical.id_name_type(product_id, product_name)
          order by product_id
       )
       as id_name_coll_type
    ) as product_coll
-from customer_order_products
+from practical.customer_order_products
 group by customer_id;
 
 create view product_alcohol_bac
