@@ -455,6 +455,7 @@ ID_NAME_COLL_TYPE(
 /*
    Display All Product ID and Names of customer Whiteheart except those Product IDs and 
    Names which are present in Hyggehumle Customer. 
+   
    Hoppy Crude Oil product appears 3 times for WHITEHART while 2 times for HYGGEHUMLE hence
    in the below output it appears 3-2 = 1 or only once.
    Hercule Trippel appeard only for WHITEHART hence it's in the output. 
@@ -534,7 +535,7 @@ ID_NAME_COLL_TYPE
       )
 */
 
--- Listing 2-9. Minus is like multiset except distinct
+-- Listing 2-9. Minus is like multiset EXCEPT DISTINCT
 
 SELECT PRODUCT_ID AS P_ID, PRODUCT_NAME
 FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
@@ -551,9 +552,71 @@ ORDER BY P_ID;
  6600 Hazy Pink Cloud
  7950 Pale Rider Rides
  */
-
--- Listing 2-10. Emulating minus all using multiset except all
-
+--
+-- Listing 2-10. Emulating minus all using multiset except all 
+-- MINUS ALL was not available until Oracle 21c. MINUS operator 
+-- removes duplicates from input set and then apply substraction. 
+-- If we want to emulate MINUS ALL (MINUS ALL does not remove duplicates
+-- from input set) we need to use the below trick using MULTISET EXCEPT 
+-- ALL by CASTing the input sets into NESTED TABLE.
+--
+-- Using MULTISET function along with CAST we can convert a SQL resultset 
+-- into a pre-defined nested table type.
+--
+SELECT
+   TAB.ID   AS P_ID
+ , TAB.NAME AS PRODUCT_NAME
+FROM TABLE 
+(
+   CAST(
+      MULTISET(
+         SELECT PRODUCT_ID, PRODUCT_NAME
+         FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+         WHERE CUSTOMER_ID = 50741
+      )
+      AS PRACTICAL.ID_NAME_COLL_TYPE
+      ) 
+) TAB
+ORDER BY P_ID;     
+--
+/*
+ P_ID PRODUCT_NAME
+----- -----------------
+ 4280 Hoppy Crude Oil
+ 4280 Hoppy Crude Oil
+ 6520 Der Helle Kumpel
+ 6520 Der Helle Kumpel
+ 6600 Hazy Pink Cloud
+ 7950 Pale Rider Rides
+ 7950 Pale Rider Rides
+ */ 
+--
+SELECT
+   TAB.ID   AS P_ID
+ , TAB.NAME AS PRODUCT_NAME
+FROM TABLE 
+(
+   CAST(
+      MULTISET(
+         SELECT PRODUCT_ID, PRODUCT_NAME
+         FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+         WHERE CUSTOMER_ID = 50042
+      )
+      AS PRACTICAL.ID_NAME_COLL_TYPE
+      ) 
+) TAB
+ORDER BY P_ID;   
+--
+/*
+ P_ID PRODUCT_NAME
+----- -----------------
+ 4280 Hoppy Crude Oil
+ 4280 Hoppy Crude Oil
+ 4280 Hoppy Crude Oil
+ 5430 Hercule Trippel
+ 6520 Der Helle Kumpel
+ */  
+--
 SELECT
    MINUS_ALL_TABLE.ID   AS P_ID
  , MINUS_ALL_TABLE.NAME AS PRODUCT_NAME
@@ -564,7 +627,7 @@ FROM TABLE(
          FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
          WHERE CUSTOMER_ID = 50741
       )
-      AS ID_NAME_COLL_TYPE
+      AS PRACTICAL.ID_NAME_COLL_TYPE
    )
    MULTISET EXCEPT ALL
    CAST(
@@ -573,13 +636,68 @@ FROM TABLE(
          FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
          WHERE CUSTOMER_ID = 50042
       )
-      AS ID_NAME_COLL_TYPE
+      AS PRACTICAL.ID_NAME_COLL_TYPE
    )
 ) MINUS_ALL_TABLE
 ORDER BY P_ID;
-
+--
+/*
+--
+ P_ID PRODUCT_NAME
+----- -----------------
+ 6520 Der Helle Kumpel
+ 6600 Hazy Pink Cloud
+ 7950 Pale Rider Rides
+ 7950 Pale Rider Rides
+ */
+--
 -- Listing 2-11. Emulating minus all using analytic row_number function
-
+-- Unique row number is generated for each combination of Product ID and Name.
+--
+SELECT
+   PRODUCT_ID AS P_ID
+ , PRODUCT_NAME
+ , ROW_NUMBER() OVER (
+      PARTITION BY PRODUCT_ID, PRODUCT_NAME
+      ORDER BY ROWNUM
+   ) AS RN
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50741;
+--
+/*
+   P_ID PRODUCT_NAME           RN
+_______ ___________________ _____
+   4280 Hoppy Crude Oil         1
+   4280 Hoppy Crude Oil         2
+   6520 Der Helle Kumpel        1
+   6520 Der Helle Kumpel        2
+   6600 Hazy Pink Cloud         1
+   7950 Pale Rider Rides        1
+   7950 Pale Rider Rides        2
+*/   
+--
+SELECT
+   PRODUCT_ID AS P_ID
+ , PRODUCT_NAME
+ , ROW_NUMBER() OVER (
+      PARTITION BY PRODUCT_ID, PRODUCT_NAME
+      ORDER BY ROWNUM
+   ) AS RN
+FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
+WHERE CUSTOMER_ID = 50042;
+--
+/*
+   P_ID PRODUCT_NAME           RN
+_______ ___________________ _____
+   4280 Hoppy Crude Oil         1
+   4280 Hoppy Crude Oil         2
+   4280 Hoppy Crude Oil         3
+   5430 Hercule Trippel         1
+   6520 Der Helle Kumpel        1
+*/
+-- 
+-- MINUS is now considering the duplicates (like EXCEPT ALL)
+--
 SELECT
    PRODUCT_ID AS P_ID
  , PRODUCT_NAME
@@ -600,5 +718,13 @@ SELECT
 FROM PRACTICAL.CUSTOMER_ORDER_PRODUCTS
 WHERE CUSTOMER_ID = 50042
 ORDER BY P_ID;
-
+--
+/*
+   P_ID PRODUCT_NAME           RN
+_______ ___________________ _____
+   6520 Der Helle Kumpel        2
+   6600 Hazy Pink Cloud         1
+   7950 Pale Rider Rides        1
+   7950 Pale Rider Rides        2
+*/   
 /* ***************************************************** */
